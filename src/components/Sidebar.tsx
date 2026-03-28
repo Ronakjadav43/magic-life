@@ -8,14 +8,18 @@ import {
   FolderKanban,
   Users,
   BarChart3,
+  ListTodo,
+  FileText,
 } from 'lucide-react';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/daily-entry', label: 'Daily Entry', icon: CalendarDays },
+  { href: '/tasks', label: 'Tasks', icon: ListTodo },
   { href: '/projects', label: 'Projects', icon: FolderKanban },
   { href: '/leads', label: 'Leads & Proposals', icon: Users },
   { href: '/kpi', label: 'KPI Summary', icon: BarChart3 },
+  { href: '/reports', label: 'Reports', icon: FileText },
 ];
 
 interface SidebarProps {
@@ -58,7 +62,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           })}
         </nav>
         <div className="sidebar-footer">
-          Personal Ops System v1.0
+          Personal Ops System v2.0
         </div>
       </aside>
     </>

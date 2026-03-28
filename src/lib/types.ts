@@ -39,6 +39,20 @@ export interface Lead {
   dealValue: number;
 }
 
+export type TaskPriority = 'Low' | 'Medium' | 'High' | 'Urgent';
+export type TaskStatus = 'To Do' | 'In Progress' | 'Done';
+
+export interface Task {
+  id: string;
+  title: string;
+  description: string;
+  priority: TaskPriority;
+  dueDate: string;
+  projectId: string | null;
+  status: TaskStatus;
+  createdAt: string;
+}
+
 export interface KPIData {
   hoursPerDay: number;
   tasksCompleted: number;
@@ -46,4 +60,14 @@ export interface KPIData {
   leadsGenerated: number;
   conversionRate: number;
   revenueWeek: number;
+}
+
+export type NotificationType = 'info' | 'success' | 'warning' | 'error';
+
+export interface AppNotification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  timestamp: number;
 }

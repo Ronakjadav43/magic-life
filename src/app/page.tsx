@@ -11,20 +11,26 @@ import {
   TrendingUp,
   Plus,
   CalendarDays,
+  AlertTriangle,
+  ListTodo,
 } from 'lucide-react';
-import { getEntries, getProjects, getLeads, calcHoursPerDay, calcConsistency, calcConversionRate, calcProjectRevenue, todayStr } from '@/lib/store';
-import type { DailyEntry, Project, Lead } from '@/lib/types';
+import { getEntries, getProjects, getLeads, getTasks, getOverdueTasks, calcConsistency, calcProjectRevenue, todayStr } from '@/lib/store';
+import type { DailyEntry, Project, Lead, Task } from '@/lib/types';
 
 export default function Dashboard() {
   const [entries, setEntries] = useState<DailyEntry[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [overdue, setOverdue] = useState<Task[]>([]);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setEntries(getEntries());
     setProjects(getProjects());
     setLeads(getLeads());
+    setTasks(getTasks());
+    setOverdue(getOverdueTasks());
     setMounted(true);
   }, []);
 
@@ -37,6 +43,7 @@ export default function Dashboard() {
   const pipelineLeads = leads.filter(l => l.status !== 'Closed');
   const totalRevenue = calcProjectRevenue(projects);
   const consistency = calcConsistency(entries, 30);
+  const activeTasks = tasks.filter(t => t.status !== 'Done');
 
   // recent activity
   const recentEntries = entries.slice(0, 5);
@@ -57,6 +64,9 @@ export default function Dashboard() {
       <div className="quick-actions">
         <Link href="/daily-entry" className="btn btn-primary">
           <Plus size={16} /> New Entry
+        </Link>
+        <Link href="/tasks" className="btn btn-secondary">
+          <ListTodo size={16} /> Add Task
         </Link>
         <Link href="/leads" className="btn btn-secondary">
           <Users size={16} /> Add Lead
@@ -122,6 +132,53 @@ export default function Dashboard() {
           <div className="stat-card-sub">Last 30 days</div>
         </div>
       </div>
+
+      {/* Overdue Tasks Alert */}
+      {overdue.length > 0 && (
+        <div className="chart-card" style={{ borderLeft: '3px solid var(--accent-rose)' }}>
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <AlertTriangle size={18} style={{ color: 'var(--accent-rose)' }} />
+            Overdue Tasks ({overdue.length})
+          </h3>
+          <div className="activity-list" style={{ marginTop: 8 }}>
+            {overdue.slice(0, 5).map(t => (
+              <div key={t.id} className="activity-item">
+                <div className="activity-dot" style={{ background: 'var(--accent-rose)' }} />
+                <div className="activity-text">
+                  <strong>{t.title}</strong>
+                  <span style={{ color: 'var(--accent-rose)', marginLeft: 8, fontSize: 12 }}>
+                    Due: {t.dueDate} · {t.priority}
+                  </span>
+                </div>
+                <Link href="/tasks" className="btn btn-sm btn-secondary">View</Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Active Tasks Summary */}
+      {activeTasks.length > 0 && (
+        <div className="chart-card">
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <ListTodo size={18} /> Active Tasks ({activeTasks.length})
+          </h3>
+          <div className="activity-list" style={{ marginTop: 8 }}>
+            {activeTasks.slice(0, 5).map(t => (
+              <div key={t.id} className="activity-item">
+                <div className={`activity-dot ${t.status === 'In Progress' ? 'blue' : 'amber'}`} />
+                <div className="activity-text">
+                  <strong>{t.title}</strong>
+                  <span style={{ color: 'var(--text-muted)', marginLeft: 8, fontSize: 12 }}>
+                    {t.status} · {t.priority}
+                    {t.dueDate && ` · Due: ${t.dueDate}`}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Recent Activity */}
       <div className="chart-card">

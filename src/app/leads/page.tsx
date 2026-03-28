@@ -10,6 +10,7 @@ import {
   Globe,
   ArrowRight,
   DollarSign,
+  Search,
 } from 'lucide-react';
 import Modal from '@/components/Modal';
 import {
@@ -41,6 +42,8 @@ const platformIcon = (p: LeadPlatform) => {
 
 export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [platformFilter, setPlatformFilter] = useState<string>('All');
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(defaultForm);
@@ -133,7 +136,29 @@ export default function LeadsPage() {
       </div>
 
       <div className="toolbar">
-        <div />
+        <div className="toolbar-left">
+          <div className="search-input-wrap">
+            <Search size={16} className="search-input-icon" />
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search leads..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="category-pills" style={{ marginBottom: 0 }}>
+            {['All', ...PLATFORMS].map(p => (
+              <button
+                key={p}
+                className={`category-pill ${platformFilter === p ? 'active' : ''}`}
+                onClick={() => setPlatformFilter(p)}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        </div>
         <button className="btn btn-primary" onClick={() => openAdd('New')}>
           <Plus size={16} /> Add Lead
         </button>
@@ -154,7 +179,14 @@ export default function LeadsPage() {
       ) : (
         <div className="pipeline">
           {STATUS_LIST.map(status => {
-            const cols = leads.filter(l => l.status === status);
+            let cols = leads.filter(l => l.status === status);
+            if (searchQuery) {
+              const q = searchQuery.toLowerCase();
+              cols = cols.filter(l => l.clientName.toLowerCase().includes(q));
+            }
+            if (platformFilter !== 'All') {
+              cols = cols.filter(l => l.platform === platformFilter);
+            }
             return (
               <div key={status} className="pipeline-col">
                 <div className="pipeline-col-header">

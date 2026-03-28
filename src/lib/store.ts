@@ -1,13 +1,14 @@
 // LocalStorage-based data store for the Personal Ops System
-import { DailyEntry, Project, Lead } from './types';
+import { DailyEntry, Project, Lead, Task } from './types';
 
 const KEYS = {
   entries: 'ops_daily_entries',
   projects: 'ops_projects',
   leads: 'ops_leads',
+  tasks: 'ops_tasks',
 };
 
-function generateId(): string {
+export function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
 }
 
@@ -80,6 +81,29 @@ export function deleteLead(id: string): void {
   saveAll(KEYS.leads, getLeads().filter(l => l.id !== id));
 }
 
+// --- Tasks ---
+export function getTasks(): Task[] {
+  return getAll<Task>(KEYS.tasks);
+}
+export function addTask(task: Omit<Task, 'id' | 'createdAt'>): Task {
+  const items = getTasks();
+  const newItem = { ...task, id: generateId(), createdAt: new Date().toISOString() };
+  items.unshift(newItem);
+  saveAll(KEYS.tasks, items);
+  return newItem;
+}
+export function updateTask(id: string, data: Partial<Task>): void {
+  const items = getTasks().map(t => (t.id === id ? { ...t, ...data } : t));
+  saveAll(KEYS.tasks, items);
+}
+export function deleteTask(id: string): void {
+  saveAll(KEYS.tasks, getTasks().filter(t => t.id !== id));
+}
+export function getOverdueTasks(): Task[] {
+  const today = todayStr();
+  return getTasks().filter(t => t.status !== 'Done' && t.dueDate && t.dueDate < today);
+}
+
 // --- KPI Calculations ---
 export function calcHoursPerDay(entries: DailyEntry[], days: number): number {
   const now = new Date();
@@ -120,4 +144,21 @@ export function calcProjectRevenue(projects: Project[]): number {
 
 export function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
+}
+
+// --- Search utility ---
+export function globalSearch(query: string): {
+  entries: DailyEntry[];
+  projects: Project[];
+  leads: Lead[];
+  tasks: Task[];
+} {
+  const q = query.toLowerCase().trim();
+  if (!q) return { entries: [], projects: [], leads: [], tasks: [] };
+  return {
+    entries: getEntries().filter(e => e.taskName.toLowerCase().includes(q) || e.notes.toLowerCase().includes(q)),
+    projects: getProjects().filter(p => p.name.toLowerCase().includes(q) || p.clientName.toLowerCase().includes(q)),
+    leads: getLeads().filter(l => l.clientName.toLowerCase().includes(q)),
+    tasks: getTasks().filter(t => t.title.toLowerCase().includes(q) || t.description.toLowerCase().includes(q)),
+  };
 }

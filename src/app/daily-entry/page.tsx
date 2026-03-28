@@ -6,6 +6,7 @@ import {
   Pencil,
   Trash2,
   CalendarDays,
+  Search,
 } from 'lucide-react';
 import Modal from '@/components/Modal';
 import {
@@ -35,6 +36,10 @@ export default function DailyEntryPage() {
   const [entries, setEntries] = useState<DailyEntry[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [filter, setFilter] = useState<string>('All');
+  const [statusFilter, setStatusFilter] = useState<string>('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(defaultForm);
@@ -52,7 +57,16 @@ export default function DailyEntryPage() {
 
   if (!mounted) return <div className="page"><div className="page-title">Loading...</div></div>;
 
-  const filtered = filter === 'All' ? entries : entries.filter(e => e.category === filter);
+  // Apply all filters
+  let filtered = entries;
+  if (filter !== 'All') filtered = filtered.filter(e => e.category === filter);
+  if (statusFilter !== 'All') filtered = filtered.filter(e => e.status === statusFilter);
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    filtered = filtered.filter(e => e.taskName.toLowerCase().includes(q) || e.notes.toLowerCase().includes(q));
+  }
+  if (dateFrom) filtered = filtered.filter(e => e.date >= dateFrom);
+  if (dateTo) filtered = filtered.filter(e => e.date <= dateTo);
 
   const openAdd = () => {
     setEditId(null);
@@ -95,23 +109,33 @@ export default function DailyEntryPage() {
     reload();
   };
 
+  const clearFilters = () => {
+    setFilter('All');
+    setStatusFilter('All');
+    setSearchQuery('');
+    setDateFrom('');
+    setDateTo('');
+  };
+
+  const hasFilters = filter !== 'All' || statusFilter !== 'All' || searchQuery || dateFrom || dateTo;
+
   return (
     <div className="page fade-in">
       <h1 className="page-title">Daily Entry</h1>
       <p className="page-subtitle">Track what you actually do every day — this is your core engine</p>
 
+      {/* Search & Filters */}
       <div className="toolbar">
-        <div className="toolbar-left">
-          <div className="category-pills">
-            {['All', ...CATEGORIES].map(cat => (
-              <button
-                key={cat}
-                className={`category-pill ${filter === cat ? 'active' : ''}`}
-                onClick={() => setFilter(cat)}
-              >
-                {cat}
-              </button>
-            ))}
+        <div className="toolbar-left" style={{ flexWrap: 'wrap', gap: 8 }}>
+          <div className="search-input-wrap">
+            <Search size={16} className="search-input-icon" />
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search entries..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
           </div>
         </div>
         <button className="btn btn-primary" onClick={openAdd}>
@@ -119,15 +143,58 @@ export default function DailyEntryPage() {
         </button>
       </div>
 
+      {/* Filter Pills */}
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16, alignItems: 'center' }}>
+        <div className="category-pills" style={{ marginBottom: 0 }}>
+          {['All', ...CATEGORIES].map(cat => (
+            <button
+              key={cat}
+              className={`category-pill ${filter === cat ? 'active' : ''}`}
+              onClick={() => setFilter(cat)}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+        <div className="category-pills" style={{ marginBottom: 0 }}>
+          {['All', ...STATUSES].map(s => (
+            <button
+              key={s}
+              className={`category-pill ${statusFilter === s ? 'active' : ''}`}
+              onClick={() => setStatusFilter(s)}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Date Range */}
+      <div style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'center', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <label style={{ fontSize: 12, color: 'var(--text-secondary)' }}>From</label>
+          <input type="date" className="form-control" style={{ width: 160 }} value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
+        </div>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <label style={{ fontSize: 12, color: 'var(--text-secondary)' }}>To</label>
+          <input type="date" className="form-control" style={{ width: 160 }} value={dateTo} onChange={e => setDateTo(e.target.value)} />
+        </div>
+        {hasFilters && (
+          <button className="btn btn-sm btn-secondary" onClick={clearFilters}>Clear All</button>
+        )}
+      </div>
+
       {filtered.length === 0 ? (
         <div className="chart-card">
           <div className="empty-state">
             <div className="empty-state-icon"><CalendarDays size={28} /></div>
-            <h3>No entries yet</h3>
-            <p>Start tracking your daily work to build momentum</p>
-            <button className="btn btn-primary" onClick={openAdd}>
-              <Plus size={16} /> Add First Entry
-            </button>
+            <h3>{hasFilters ? 'No matching entries' : 'No entries yet'}</h3>
+            <p>{hasFilters ? 'Try adjusting your filters' : 'Start tracking your daily work to build momentum'}</p>
+            {!hasFilters && (
+              <button className="btn btn-primary" onClick={openAdd}>
+                <Plus size={16} /> Add First Entry
+              </button>
+            )}
           </div>
         </div>
       ) : (

@@ -8,6 +8,7 @@ import {
   FolderKanban,
   Calendar,
   DollarSign,
+  Search,
 } from 'lucide-react';
 import Modal from '@/components/Modal';
 import {
@@ -34,6 +35,7 @@ const defaultForm = {
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>('All');
+  const [searchQuery, setSearchQuery] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(defaultForm);
@@ -48,7 +50,11 @@ export default function ProjectsPage() {
 
   if (!mounted) return <div className="page"><div className="page-title">Loading...</div></div>;
 
-  const filtered = statusFilter === 'All' ? projects : projects.filter(p => p.status === statusFilter);
+  let filtered = statusFilter === 'All' ? projects : projects.filter(p => p.status === statusFilter);
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.clientName.toLowerCase().includes(q));
+  }
 
   const openAdd = () => {
     setEditId(null);
@@ -98,7 +104,17 @@ export default function ProjectsPage() {
 
       <div className="toolbar">
         <div className="toolbar-left">
-          <div className="category-pills">
+          <div className="search-input-wrap">
+            <Search size={16} className="search-input-icon" />
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search projects..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="category-pills" style={{ marginBottom: 0 }}>
             {['All', ...STATUS_LIST].map(s => (
               <button
                 key={s}
