@@ -10,6 +10,8 @@ import {
   AlertTriangle,
   Calendar,
   Search,
+  MessageCircle,
+  Send,
 } from 'lucide-react';
 import Modal from '@/components/Modal';
 import {
@@ -20,6 +22,7 @@ import {
   getProjects,
   todayStr,
 } from '@/lib/store';
+import { sendTaskToWhatsApp, sendTaskSummaryToWhatsApp, sendOverdueToWhatsApp } from '@/lib/whatsapp';
 import type { Task, TaskPriority, TaskStatus, Project } from '@/lib/types';
 
 const STATUS_COLS: TaskStatus[] = ['To Do', 'In Progress', 'Done'];
@@ -139,9 +142,21 @@ export default function TasksPage() {
             </div>
           )}
         </div>
-        <button className="btn btn-primary" onClick={() => openAdd('To Do')}>
-          <Plus size={16} /> New Task
-        </button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {tasks.length > 0 && (
+            <button className="btn btn-whatsapp" onClick={sendTaskSummaryToWhatsApp} title="Send summary to WhatsApp">
+              <MessageCircle size={16} /> WhatsApp Summary
+            </button>
+          )}
+          {overdueCount > 0 && (
+            <button className="btn btn-whatsapp-alert" onClick={sendOverdueToWhatsApp} title="Send overdue alert to WhatsApp">
+              <Send size={16} /> Alert Overdue
+            </button>
+          )}
+          <button className="btn btn-primary" onClick={() => openAdd('To Do')}>
+            <Plus size={16} /> New Task
+          </button>
+        </div>
       </div>
 
       {/* Kanban Board */}
@@ -193,6 +208,14 @@ export default function TasksPage() {
                           {task.priority}
                         </span>
                         <div style={{ display: 'flex', gap: 4 }}>
+                          <button
+                            className="btn-icon"
+                            style={{ padding: 4, border: 'none', color: '#25D366' }}
+                            onClick={e => { e.stopPropagation(); sendTaskToWhatsApp(task); }}
+                            title="Send to WhatsApp"
+                          >
+                            <MessageCircle size={14} />
+                          </button>
                           {status !== 'Done' && (
                             <button
                               className="btn-icon"

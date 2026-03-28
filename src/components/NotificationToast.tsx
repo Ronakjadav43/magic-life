@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { X, Bell, AlertTriangle, CheckCircle2, Info } from 'lucide-react';
+import { X, Bell, AlertTriangle, CheckCircle2, Info, MessageCircle } from 'lucide-react';
 import type { AppNotification } from '@/lib/types';
 
 interface NotificationToastProps {
@@ -45,9 +45,15 @@ function ToastItem({ notification, onDismiss }: { notification: AppNotification;
   const Icon = ICON_MAP[notification.type];
 
   useEffect(() => {
-    timerRef.current = setTimeout(() => onDismiss(notification.id), 6000);
+    timerRef.current = setTimeout(() => onDismiss(notification.id), 8000);
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, [notification.id, onDismiss]);
+
+  const handleWhatsApp = () => {
+    if (notification.whatsappAction) {
+      notification.whatsappAction();
+    }
+  };
 
   return (
     <div
@@ -63,6 +69,11 @@ function ToastItem({ notification, onDismiss }: { notification: AppNotification;
       <div className="toast-body">
         <div className="toast-title">{notification.title}</div>
         <div className="toast-message">{notification.message}</div>
+        {notification.whatsappAction && (
+          <button className="toast-whatsapp-btn" onClick={handleWhatsApp}>
+            <MessageCircle size={14} /> Send to WhatsApp
+          </button>
+        )}
       </div>
       <button className="toast-close" onClick={() => onDismiss(notification.id)}>
         <X size={14} />

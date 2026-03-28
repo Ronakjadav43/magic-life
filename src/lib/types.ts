@@ -70,4 +70,12 @@ export interface AppNotification {
   title: string;
   message: string;
   timestamp: number;
+  whatsappAction?: () => void;
 }
+
+export interface UserSettings {
+  dailyReminderTime: string; // HH:MM format e.g. "10:00"
+  overdueReminderTime: string; // HH:MM format
+  whatsappNumber: string;
+}
+

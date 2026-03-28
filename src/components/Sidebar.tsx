@@ -10,6 +10,7 @@ import {
   BarChart3,
   ListTodo,
   FileText,
+  Settings,
 } from 'lucide-react';
 
 const navItems = [
@@ -20,6 +21,7 @@ const navItems = [
   { href: '/leads', label: 'Leads & Proposals', icon: Users },
   { href: '/kpi', label: 'KPI Summary', icon: BarChart3 },
   { href: '/reports', label: 'Reports', icon: FileText },
+  { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
 interface SidebarProps {

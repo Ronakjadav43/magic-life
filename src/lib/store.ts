@@ -1,5 +1,5 @@
 // LocalStorage-based data store for the Personal Ops System
-import { DailyEntry, Project, Lead, Task } from './types';
+import { DailyEntry, Project, Lead, Task, UserSettings } from './types';
 
 const KEYS = {
   entries: 'ops_daily_entries',
@@ -162,3 +162,30 @@ export function globalSearch(query: string): {
     tasks: getTasks().filter(t => t.title.toLowerCase().includes(q) || t.description.toLowerCase().includes(q)),
   };
 }
+
+// --- Settings ---
+const SETTINGS_KEY = 'ops_settings';
+
+const DEFAULT_SETTINGS: UserSettings = {
+  dailyReminderTime: '10:00',
+  overdueReminderTime: '09:00',
+  whatsappNumber: '919723242591',
+};
+
+export function getSettings(): UserSettings {
+  if (typeof window === 'undefined') return DEFAULT_SETTINGS;
+  const raw = localStorage.getItem(SETTINGS_KEY);
+  if (!raw) return DEFAULT_SETTINGS;
+  try {
+    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+  } catch {
+    return DEFAULT_SETTINGS;
+  }
+}
+
+export function saveSettings(settings: Partial<UserSettings>): void {
+  if (typeof window === 'undefined') return;
+  const current = getSettings();
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...current, ...settings }));
+}
+

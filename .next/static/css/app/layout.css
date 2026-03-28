@@ -1457,4 +1457,65 @@ input, select, textarea { font-family: inherit; }
   }
 }
 
+/* ========= WHATSAPP BUTTONS ========= */
+.btn-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  background: rgba(37, 211, 102, 0.15);
+  color: #25D366;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-whatsapp:hover {
+  background: rgba(37, 211, 102, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(37, 211, 102, 0.15);
+}
+
+.btn-whatsapp-alert {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  background: rgba(244, 63, 94, 0.12);
+  color: var(--accent-rose);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-whatsapp-alert:hover {
+  background: rgba(244, 63, 94, 0.22);
+  transform: translateY(-1px);
+}
+
+.toast-whatsapp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  background: rgba(37, 211, 102, 0.15);
+  color: #25D366;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toast-whatsapp-btn:hover {
+  background: rgba(37, 211, 102, 0.3);
+}
 
