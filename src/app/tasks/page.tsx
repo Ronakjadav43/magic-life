@@ -2,31 +2,21 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import {
-  Plus,
-  Pencil,
-  Trash2,
-  ListTodo,
-  ArrowRight,
-  AlertTriangle,
-  Calendar,
-  Search,
-  MessageCircle,
-  Send,
+  Plus, Trash2, ListTodo, ArrowRight, AlertTriangle,
+  Calendar, Search, MessageCircle, Send,
+  User, CheckCircle2, Clock,
 } from 'lucide-react';
 import Modal from '@/components/Modal';
 import {
-  getTasks,
-  addTask,
-  updateTask,
-  deleteTask,
-  getProjects,
-  todayStr,
+  getTasks, addTask, updateTask, deleteTask,
+  getProjects, getActiveStaff, todayStr,
 } from '@/lib/store';
 import { sendTaskToWhatsApp, sendTaskSummaryToWhatsApp, sendOverdueToWhatsApp } from '@/lib/whatsapp';
-import type { Task, TaskPriority, TaskStatus, Project } from '@/lib/types';
+import type { Task, TaskPriority, TaskStatus, Project, StaffMember, ApprovalStatus } from '@/lib/types';
 
 const STATUS_COLS: TaskStatus[] = ['To Do', 'In Progress', 'Done'];
 const PRIORITIES: TaskPriority[] = ['Low', 'Medium', 'High', 'Urgent'];
+const APPROVAL_OPTS: ApprovalStatus[] = ['Not Submitted', 'Pending Review'];
 
 const defaultForm = {
   title: '',
@@ -35,6 +25,8 @@ const defaultForm = {
   dueDate: '',
   projectId: null as string | null,
   status: 'To Do' as TaskStatus,
+  assigneeId: null as string | null,
+  approval: 'Not Submitted' as ApprovalStatus,
 };
 
 const priorityColor: Record<TaskPriority, string> = {
@@ -44,9 +36,24 @@ const priorityColor: Record<TaskPriority, string> = {
   Urgent: 'badge-overdue',
 };
 
+const approvalIcon: Record<ApprovalStatus, typeof CheckCircle2> = {
+  'Approved': CheckCircle2,
+  'Pending Review': Clock,
+  'Rejected': AlertTriangle,
+  'Not Submitted': Clock,
+};
+
+const approvalColor: Record<ApprovalStatus, string> = {
+  'Approved': 'var(--accent-emerald)',
+  'Pending Review': 'var(--accent-amber)',
+  'Rejected': 'var(--accent-rose)',
+  'Not Submitted': 'var(--text-muted)',
+};
+
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [staffList, setStaffList] = useState<StaffMember[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(defaultForm);
@@ -56,6 +63,7 @@ export default function TasksPage() {
   const reload = useCallback(() => {
     setTasks(getTasks());
     setProjects(getProjects());
+    setStaffList(getActiveStaff());
   }, []);
 
   useEffect(() => {
@@ -86,6 +94,8 @@ export default function TasksPage() {
       dueDate: task.dueDate,
       projectId: task.projectId,
       status: task.status,
+      assigneeId: task.assigneeId || null,
+      approval: task.approval || 'Not Submitted',
     });
     setShowModal(true);
   };
@@ -114,14 +124,21 @@ export default function TasksPage() {
     }
   };
 
+  const submitForApproval = (task: Task) => {
+    updateTask(task.id, { approval: 'Pending Review' });
+    reload();
+  };
+
   const isOverdue = (task: Task) => task.status !== 'Done' && task.dueDate && task.dueDate < today;
 
   const overdueCount = tasks.filter(t => isOverdue(t)).length;
 
+  const getAssignee = (id?: string | null) => staffList.find(s => s.id === id);
+
   return (
     <div className="page fade-in">
       <h1 className="page-title">Tasks</h1>
-      <p className="page-subtitle">Manage your to-dos with priorities and deadlines</p>
+      <p className="page-subtitle">Manage your to-dos with priorities, assignments and approvals</p>
 
       {/* Stats & Search */}
       <div className="toolbar">
@@ -142,7 +159,7 @@ export default function TasksPage() {
             </div>
           )}
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {tasks.length > 0 && (
             <button className="btn btn-whatsapp" onClick={sendTaskSummaryToWhatsApp} title="Send summary to WhatsApp">
               <MessageCircle size={16} /> WhatsApp Summary
@@ -184,12 +201,8 @@ export default function TasksPage() {
                   <span className="pipeline-col-count">{colTasks.length}</span>
                 </div>
 
-                {/* Quick add for To Do */}
                 {status === 'To Do' && (
-                  <button
-                    className="kanban-quick-add"
-                    onClick={() => openAdd('To Do')}
-                  >
+                  <button className="kanban-quick-add" onClick={() => openAdd('To Do')}>
                     <Plus size={14} /> Add task
                   </button>
                 )}
@@ -197,6 +210,9 @@ export default function TasksPage() {
                 {colTasks.map(task => {
                   const proj = task.projectId ? projects.find(p => p.id === task.projectId) : null;
                   const overdue = isOverdue(task);
+                  const assignee = getAssignee(task.assigneeId);
+                  const approval = task.approval || 'Not Submitted';
+                  const ApprovalIcon = approvalIcon[approval];
                   return (
                     <div
                       key={task.id}
@@ -208,6 +224,11 @@ export default function TasksPage() {
                           {task.priority}
                         </span>
                         <div style={{ display: 'flex', gap: 4 }}>
+                          {approval !== 'Not Submitted' && (
+                            <span style={{ padding: 4, color: approvalColor[approval] }} title={approval}>
+                              <ApprovalIcon size={14} />
+                            </span>
+                          )}
                           <button
                             className="btn-icon"
                             style={{ padding: 4, border: 'none', color: '#25D366' }}
@@ -246,6 +267,11 @@ export default function TasksPage() {
                           </span>
                         )}
                         {proj && <span>📁 {proj.name}</span>}
+                        {assignee && (
+                          <span className="kanban-assignee">
+                            <span className="kanban-assignee-dot" style={{ background: assignee.color }}>{assignee.initials}</span>
+                          </span>
+                        )}
                       </div>
                     </div>
                   );
@@ -323,6 +349,29 @@ export default function TasksPage() {
               >
                 <option value="">None</option>
                 {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label><User size={14} style={{ verticalAlign: 'middle' }} /> Assign To</label>
+              <select
+                className="form-control"
+                value={form.assigneeId || ''}
+                onChange={e => setForm({ ...form, assigneeId: e.target.value || null })}
+              >
+                <option value="">Unassigned</option>
+                {staffList.map(s => <option key={s.id} value={s.id}>{s.name} ({s.role})</option>)}
+              </select>
+            </div>
+            <div className="form-group">
+              <label><CheckCircle2 size={14} style={{ verticalAlign: 'middle' }} /> Approval</label>
+              <select
+                className="form-control"
+                value={form.approval}
+                onChange={e => setForm({ ...form, approval: e.target.value as ApprovalStatus })}
+              >
+                {APPROVAL_OPTS.map(a => <option key={a} value={a}>{a}</option>)}
               </select>
             </div>
           </div>

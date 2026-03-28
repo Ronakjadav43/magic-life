@@ -11,6 +11,8 @@ import {
   ListTodo,
   FileText,
   Settings,
+  UserCog,
+  FileCheck,
 } from 'lucide-react';
 
 const navItems = [
@@ -19,6 +21,8 @@ const navItems = [
   { href: '/tasks', label: 'Tasks', icon: ListTodo },
   { href: '/projects', label: 'Projects', icon: FolderKanban },
   { href: '/leads', label: 'Leads & Proposals', icon: Users },
+  { href: '/staff', label: 'Team & Staff', icon: UserCog },
+  { href: '/approvals', label: 'Approvals', icon: FileCheck },
   { href: '/kpi', label: 'KPI Summary', icon: BarChart3 },
   { href: '/reports', label: 'Reports', icon: FileText },
   { href: '/settings', label: 'Settings', icon: Settings },
@@ -64,7 +68,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           })}
         </nav>
         <div className="sidebar-footer">
-          Personal Ops System v2.0
+          Personal Ops System v3.0
         </div>
       </aside>
     </>

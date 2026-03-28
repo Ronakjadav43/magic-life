@@ -15,6 +15,10 @@ export interface DailyEntry {
   timeSpent: number; // hours
   status: EntryStatus;
   notes: string;
+  assigneeId?: string | null;
+  approval?: ApprovalStatus;
+  approvedBy?: string | null;
+  approvalNote?: string;
 }
 
 export interface Project {
@@ -26,6 +30,7 @@ export interface Project {
   status: ProjectStatus;
   progress: number; // 0-100
   revenue: number;
+  teamIds?: string[];
 }
 
 export interface Lead {
@@ -51,6 +56,10 @@ export interface Task {
   projectId: string | null;
   status: TaskStatus;
   createdAt: string;
+  assigneeId?: string | null;
+  approval?: ApprovalStatus;
+  approvedBy?: string | null;
+  approvalNote?: string;
 }
 
 export interface KPIData {
@@ -74,8 +83,24 @@ export interface AppNotification {
 }
 
 export interface UserSettings {
-  dailyReminderTime: string; // HH:MM format e.g. "10:00"
-  overdueReminderTime: string; // HH:MM format
+  dailyReminderTime: string;
+  overdueReminderTime: string;
   whatsappNumber: string;
+}
+
+// --- Phase 3: Staff & Approval ---
+
+export type StaffRole = 'Admin' | 'Manager' | 'Staff';
+export type ApprovalStatus = 'Pending Review' | 'Approved' | 'Rejected' | 'Not Submitted';
+
+export interface StaffMember {
+  id: string;
+  name: string;
+  email: string;
+  role: StaffRole;
+  initials: string;
+  color: string; // avatar bg color
+  active: boolean;
+  createdAt: string;
 }
 

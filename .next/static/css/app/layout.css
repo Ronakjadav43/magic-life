@@ -1519,3 +1519,423 @@ input, select, textarea { font-family: inherit; }
   background: rgba(37, 211, 102, 0.3);
 }
 
+/* ========= PHASE 3: STAFF ========= */
+.staff-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 12px;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.staff-stat-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+}
+
+.staff-stat-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.staff-stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.staff-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-gap: 16px;
+  gap: 16px;
+}
+
+.staff-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  transition: all 0.2s;
+}
+
+.staff-card:hover {
+  border-color: var(--accent-purple);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.staff-card-inactive {
+  opacity: 0.55;
+}
+
+.staff-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.staff-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.staff-card-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.staff-card-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.staff-card-email {
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.staff-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.staff-role-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.staff-status-dot {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.staff-status-dot::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.staff-status-dot.active::before {
+  background: var(--accent-emerald);
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+}
+
+.staff-status-dot.inactive::before {
+  background: var(--text-muted);
+}
+
+.staff-status-dot.active {
+  color: var(--accent-emerald);
+}
+
+.staff-status-dot.inactive {
+  color: var(--text-muted);
+}
+
+/* ========= KANBAN ASSIGNEE ========= */
+.kanban-assignee {
+  display: inline-flex;
+  align-items: center;
+}
+
+.kanban-assignee-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 700;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ========= PHASE 3: APPROVALS ========= */
+.approval-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 16px;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.approval-stat-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-left: 3px solid;
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.approval-stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.approval-stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.approval-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.approval-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.approval-tab:hover {
+  border-color: var(--accent-purple);
+  color: var(--text-primary);
+}
+
+.approval-tab-active {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: var(--accent-purple);
+  color: var(--accent-purple);
+}
+
+.approval-tab-count {
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--accent-purple);
+  color: white;
+  padding: 1px 7px;
+  border-radius: 10px;
+}
+
+.approval-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.approval-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.approval-item {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.approval-item:hover {
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.approval-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  cursor: pointer;
+}
+
+.approval-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.approval-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.approval-item-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.approval-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.approval-meta-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.approval-item-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.approval-status-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.approval-item-body {
+  padding: 0 18px 18px;
+  border-top: 1px solid var(--border-color);
+}
+
+.approval-item-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 14px 0 0;
+  line-height: 1.5;
+}
+
+.approval-note-display {
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: rgba(139, 92, 246, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-top: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.approval-actions {
+  margin-top: 14px;
+}
+
+.approval-note-input {
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.approval-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-approve {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--accent-emerald);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-approve:hover {
+  background: rgba(16, 185, 129, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-reject {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  background: rgba(244, 63, 94, 0.12);
+  color: var(--accent-rose);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-reject:hover {
+  background: rgba(244, 63, 94, 0.22);
+  transform: translateY(-1px);
+}
+
+/* ========= RESPONSIVE PHASE 3 ========= */
+@media (max-width: 768px) {
+  .staff-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .staff-grid {
+    grid-template-columns: 1fr;
+  }
+  .approval-stats {
+    grid-template-columns: 1fr;
+  }
+  .approval-tabs {
+    gap: 6px;
+  }
+  .approval-tab {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+  .approval-buttons {
+    flex-direction: column;
+  }
+}
+
+

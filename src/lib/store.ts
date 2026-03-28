@@ -1,11 +1,12 @@
 // LocalStorage-based data store for the Personal Ops System
-import { DailyEntry, Project, Lead, Task, UserSettings } from './types';
+import { DailyEntry, Project, Lead, Task, UserSettings, StaffMember } from './types';
 
 const KEYS = {
   entries: 'ops_daily_entries',
   projects: 'ops_projects',
   leads: 'ops_leads',
   tasks: 'ops_tasks',
+  staff: 'ops_staff',
 };
 
 export function generateId(): string {
@@ -189,3 +190,65 @@ export function saveSettings(settings: Partial<UserSettings>): void {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...current, ...settings }));
 }
 
+// --- Staff ---
+const STAFF_COLORS = [
+  '#6366f1', '#8b5cf6', '#a855f7', '#ec4899', '#f43f5e',
+  '#f97316', '#eab308', '#22c55e', '#14b8a6', '#06b6d4',
+  '#3b82f6', '#0ea5e9',
+];
+
+function pickColor(): string {
+  return STAFF_COLORS[Math.floor(Math.random() * STAFF_COLORS.length)];
+}
+
+function makeInitials(name: string): string {
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+}
+
+export function getStaff(): StaffMember[] {
+  return getAll<StaffMember>(KEYS.staff);
+}
+
+export function getActiveStaff(): StaffMember[] {
+  return getStaff().filter(s => s.active);
+}
+
+export function addStaff(data: Omit<StaffMember, 'id' | 'createdAt' | 'initials' | 'color'>): StaffMember {
+  const items = getStaff();
+  const newItem: StaffMember = {
+    ...data,
+    id: generateId(),
+    initials: makeInitials(data.name),
+    color: pickColor(),
+    createdAt: new Date().toISOString(),
+  };
+  items.unshift(newItem);
+  saveAll(KEYS.staff, items);
+  return newItem;
+}
+
+export function updateStaff(id: string, data: Partial<StaffMember>): void {
+  const items = getStaff().map(s => {
+    if (s.id !== id) return s;
+    const updated = { ...s, ...data };
+    if (data.name) updated.initials = makeInitials(data.name);
+    return updated;
+  });
+  saveAll(KEYS.staff, items);
+}
+
+export function deleteStaff(id: string): void {
+  saveAll(KEYS.staff, getStaff().filter(s => s.id !== id));
+}
+
+export function getStaffById(id: string): StaffMember | undefined {
+  return getStaff().find(s => s.id === id);
+}
+
+// --- Approval Helpers ---
+export function getPendingApprovals(): { tasks: Task[]; entries: DailyEntry[] } {
+  return {
+    tasks: getTasks().filter(t => t.approval === 'Pending Review'),
+    entries: getEntries().filter(e => e.approval === 'Pending Review'),
+  };
+}
