@@ -39,7 +39,7 @@ export default function StaffPage() {
   const [roleFilter, setRoleFilter] = useState<StaffRole | 'All'>('All');
   const [mounted, setMounted] = useState(false);
 
-  const reload = useCallback(() => setStaff(getStaff()), []);
+  const reload = useCallback(async () => setStaff(await getStaff()), []);
 
   useEffect(() => {
     reload();
@@ -64,25 +64,25 @@ export default function StaffPage() {
     setShowModal(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name.trim()) return;
     if (editId) {
-      updateStaff(editId, form);
+      await updateStaff(editId, form);
     } else {
-      addStaff(form);
+      await addStaff(form);
     }
     setShowModal(false);
-    reload();
+    await reload();
   };
 
-  const handleDelete = (id: string) => {
-    deleteStaff(id);
-    reload();
+  const handleDelete = async (id: string) => {
+    await deleteStaff(id);
+    await reload();
   };
 
-  const toggleActive = (s: StaffMember) => {
-    updateStaff(s.id, { active: !s.active });
-    reload();
+  const toggleActive = async (s: StaffMember) => {
+    await updateStaff(s.id, { active: !s.active });
+    await reload();
   };
 
   const activeCount = staff.filter(s => s.active).length;

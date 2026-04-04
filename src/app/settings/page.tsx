@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react';
 import { Save, Clock, MessageCircle, Bell, RotateCcw } from 'lucide-react';
 import { getSettings, saveSettings } from '@/lib/store';
+import { useAuth } from '@/lib/auth-context';
 import type { UserSettings } from '@/lib/types';
 
 export default function SettingsPage() {
+  const { user } = useAuth();
   const [settings, setSettings] = useState<UserSettings>({
     dailyReminderTime: '10:00',
     overdueReminderTime: '09:00',
@@ -15,31 +17,36 @@ export default function SettingsPage() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setSettings(getSettings());
-    setMounted(true);
-  }, []);
+    async function load() {
+      if (user?.id) {
+        const s = await getSettings(user.id);
+        setSettings(s);
+      }
+      setMounted(true);
+    }
+    load();
+  }, [user]);
 
   if (!mounted) return <div className="page"><div className="page-title">Loading...</div></div>;
 
-  const handleSave = () => {
-    saveSettings(settings);
+  const handleSave = async () => {
+    if (user?.id) {
+      await saveSettings({ ...settings, userId: user.id });
+    }
     setSaved(true);
-    // Clear reminder flags so new times take effect
-    localStorage.removeItem('ops_last_reminder');
-    localStorage.removeItem('ops_last_entry_reminder');
     setTimeout(() => setSaved(false), 3000);
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     const defaults: UserSettings = {
       dailyReminderTime: '10:00',
       overdueReminderTime: '09:00',
       whatsappNumber: '919723242591',
     };
     setSettings(defaults);
-    saveSettings(defaults);
-    localStorage.removeItem('ops_last_reminder');
-    localStorage.removeItem('ops_last_entry_reminder');
+    if (user?.id) {
+      await saveSettings({ ...defaults, userId: user.id });
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };

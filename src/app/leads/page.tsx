@@ -49,7 +49,7 @@ export default function LeadsPage() {
   const [form, setForm] = useState(defaultForm);
   const [mounted, setMounted] = useState(false);
 
-  const reload = useCallback(() => setLeads(getLeads()), []);
+  const reload = useCallback(async () => setLeads(await getLeads()), []);
 
   useEffect(() => {
     reload();
@@ -78,27 +78,27 @@ export default function LeadsPage() {
     setShowModal(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.clientName.trim()) return;
     if (editId) {
-      updateLead(editId, form);
+      await updateLead(editId, form);
     } else {
-      addLead(form);
+      await addLead(form);
     }
     setShowModal(false);
-    reload();
+    await reload();
   };
 
-  const handleDelete = (id: string) => {
-    deleteLead(id);
-    reload();
+  const handleDelete = async (id: string) => {
+    await deleteLead(id);
+    await reload();
   };
 
-  const moveToNext = (lead: Lead) => {
+  const moveToNext = async (lead: Lead) => {
     const idx = STATUS_LIST.indexOf(lead.status);
     if (idx < STATUS_LIST.length - 1) {
-      updateLead(lead.id, { status: STATUS_LIST[idx + 1] });
-      reload();
+      await updateLead(lead.id, { status: STATUS_LIST[idx + 1] });
+      await reload();
     }
   };
 

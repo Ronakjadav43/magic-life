@@ -3,15 +3,18 @@ import { getTasks, getOverdueTasks, getEntries, todayStr, getSettings } from './
 import type { Task } from './types';
 
 const APP_URL = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+const DEFAULT_NUMBER = '919723242591';
 
-// Generate WhatsApp URL with pre-filled message
-export function whatsappUrl(message: string): string {
-  const number = getSettings().whatsappNumber || '919723242591';
+// Generate WhatsApp URL with pre-filled message (needs number passed in)
+function whatsappUrlWithNumber(number: string, message: string): string {
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }
 
 // Send a single task to WhatsApp
-export function sendTaskToWhatsApp(task: Task): void {
+export async function sendTaskToWhatsApp(task: Task): Promise<void> {
+  const settings = await getSettings();
+  const number = settings.whatsappNumber || DEFAULT_NUMBER;
+
   const lines = [
     `📋 *Task: ${task.title}*`,
     '',
@@ -23,13 +26,16 @@ export function sendTaskToWhatsApp(task: Task): void {
     `🔗 Open Tasks: ${APP_URL}/tasks`,
   ].filter(Boolean).join('\n');
 
-  window.open(whatsappUrl(lines), '_blank');
+  window.open(whatsappUrlWithNumber(number, lines), '_blank');
 }
 
 // Send overdue tasks summary to WhatsApp
-export function sendOverdueToWhatsApp(): void {
-  const overdue = getOverdueTasks();
+export async function sendOverdueToWhatsApp(): Promise<void> {
+  const overdue = await getOverdueTasks();
   if (overdue.length === 0) return;
+
+  const settings = await getSettings();
+  const number = settings.whatsappNumber || DEFAULT_NUMBER;
 
   const taskLines = overdue.map((t, i) =>
     `${i + 1}. *${t.title}* — Due: ${t.dueDate} (${t.priority})`
@@ -44,13 +50,17 @@ export function sendOverdueToWhatsApp(): void {
     `🔗 View Tasks: ${APP_URL}/tasks`,
   ].join('\n');
 
-  window.open(whatsappUrl(message), '_blank');
+  window.open(whatsappUrlWithNumber(number, message), '_blank');
 }
 
 // Send daily entry reminder to WhatsApp
-export function sendDailyReminderToWhatsApp(): void {
+export async function sendDailyReminderToWhatsApp(): Promise<void> {
   const today = todayStr();
-  const todayEntries = getEntries().filter(e => e.date === today);
+  const entries = await getEntries();
+  const todayEntries = entries.filter(e => e.date === today);
+
+  const settings = await getSettings();
+  const number = settings.whatsappNumber || DEFAULT_NUMBER;
 
   const message = todayEntries.length === 0
     ? [
@@ -73,17 +83,20 @@ export function sendDailyReminderToWhatsApp(): void {
       `🔗 View Entries: ${APP_URL}/daily-entry`,
     ].join('\n');
 
-  window.open(whatsappUrl(message), '_blank');
+  window.open(whatsappUrlWithNumber(number, message), '_blank');
 }
 
 // Send full daily task summary (all active tasks) to WhatsApp
-export function sendTaskSummaryToWhatsApp(): void {
-  const tasks = getTasks();
+export async function sendTaskSummaryToWhatsApp(): Promise<void> {
+  const tasks = await getTasks();
   const todo = tasks.filter(t => t.status === 'To Do');
   const inProgress = tasks.filter(t => t.status === 'In Progress');
   const done = tasks.filter(t => t.status === 'Done');
-  const overdue = getOverdueTasks();
+  const overdue = await getOverdueTasks();
   const today = todayStr();
+
+  const settings = await getSettings();
+  const number = settings.whatsappNumber || DEFAULT_NUMBER;
 
   const formatList = (list: Task[]) =>
     list.length === 0
@@ -109,5 +122,5 @@ export function sendTaskSummaryToWhatsApp(): void {
     `🔗 Manage Tasks: ${APP_URL}/tasks`,
   ].filter(Boolean).join('\n');
 
-  window.open(whatsappUrl(message), '_blank');
+  window.open(whatsappUrlWithNumber(number, message), '_blank');
 }

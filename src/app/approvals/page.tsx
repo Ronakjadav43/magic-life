@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import {
   getTasks, updateTask, getEntries, updateEntry,
-  getStaff, getPendingApprovals,
+  getStaff,
 } from '@/lib/store';
 import type { Task, DailyEntry, StaffMember, ApprovalStatus } from '@/lib/types';
 
@@ -36,10 +36,11 @@ export default function ApprovalsPage() {
   const [approvalNote, setApprovalNote] = useState('');
   const [mounted, setMounted] = useState(false);
 
-  const reload = useCallback(() => {
-    setTasks(getTasks());
-    setEntries(getEntries());
-    setStaff(getStaff());
+  const reload = useCallback(async () => {
+    const [t, e, s] = await Promise.all([getTasks(), getEntries(), getStaff()]);
+    setTasks(t);
+    setEntries(e);
+    setStaff(s);
   }, []);
 
   useEffect(() => {
@@ -71,23 +72,22 @@ export default function ApprovalsPage() {
   const filteredTasks = tasks.filter(t => t.approval && filterByTab(t.approval));
   const filteredEntries = entries.filter(e => e.approval && filterByTab(e.approval));
 
-  const pending = getPendingApprovals();
-  const pendingCount = pending.tasks.length + pending.entries.length;
+  const pendingCount = tasks.filter(t => t.approval === 'Pending Review').length + entries.filter(e => e.approval === 'Pending Review').length;
   const approvedCount = tasks.filter(t => t.approval === 'Approved').length + entries.filter(e => e.approval === 'Approved').length;
   const rejectedCount = tasks.filter(t => t.approval === 'Rejected').length + entries.filter(e => e.approval === 'Rejected').length;
 
-  const handleApproveTask = (id: string, status: 'Approved' | 'Rejected') => {
-    updateTask(id, { approval: status, approvedBy: 'Admin', approvalNote: approvalNote || undefined });
+  const handleApproveTask = async (id: string, status: 'Approved' | 'Rejected') => {
+    await updateTask(id, { approval: status, approvedBy: 'Admin', approvalNote: approvalNote || undefined });
     setApprovalNote('');
     setExpandedId(null);
-    reload();
+    await reload();
   };
 
-  const handleApproveEntry = (id: string, status: 'Approved' | 'Rejected') => {
-    updateEntry(id, { approval: status, approvedBy: 'Admin', approvalNote: approvalNote || undefined });
+  const handleApproveEntry = async (id: string, status: 'Approved' | 'Rejected') => {
+    await updateEntry(id, { approval: status, approvedBy: 'Admin', approvalNote: approvalNote || undefined });
     setApprovalNote('');
     setExpandedId(null);
-    reload();
+    await reload();
   };
 
   const toggleExpand = (id: string) => {

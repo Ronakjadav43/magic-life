@@ -1,108 +1,130 @@
-// LocalStorage-based data store for the Personal Ops System
+// Database-backed data store via API for the Personal Ops System
 import { DailyEntry, Project, Lead, Task, UserSettings, StaffMember } from './types';
 
-const KEYS = {
-  entries: 'ops_daily_entries',
-  projects: 'ops_projects',
-  leads: 'ops_leads',
-  tasks: 'ops_tasks',
-  staff: 'ops_staff',
-};
-
-export function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
-}
-
-// --- Generic CRUD ---
-function getAll<T>(key: string): T[] {
-  if (typeof window === 'undefined') return [];
-  const raw = localStorage.getItem(key);
-  return raw ? JSON.parse(raw) : [];
-}
-
-function saveAll<T>(key: string, items: T[]): void {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(key, JSON.stringify(items));
-}
-
 // --- Daily Entries ---
-export function getEntries(): DailyEntry[] {
-  return getAll<DailyEntry>(KEYS.entries);
+export async function getEntries(): Promise<DailyEntry[]> {
+  try {
+    const res = await fetch('/api/entries');
+    if (!res.ok) return [];
+    return await res.json();
+  } catch { return []; }
 }
-export function addEntry(entry: Omit<DailyEntry, 'id'>): DailyEntry {
-  const items = getEntries();
-  const newItem = { ...entry, id: generateId() };
-  items.unshift(newItem);
-  saveAll(KEYS.entries, items);
-  return newItem;
+
+export async function addEntry(entry: Omit<DailyEntry, 'id'>): Promise<DailyEntry> {
+  const res = await fetch('/api/entries', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(entry),
+  });
+  return await res.json();
 }
-export function updateEntry(id: string, data: Partial<DailyEntry>): void {
-  const items = getEntries().map(e => (e.id === id ? { ...e, ...data } : e));
-  saveAll(KEYS.entries, items);
+
+export async function updateEntry(id: string, data: Partial<DailyEntry>): Promise<void> {
+  await fetch(`/api/entries/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
 }
-export function deleteEntry(id: string): void {
-  saveAll(KEYS.entries, getEntries().filter(e => e.id !== id));
+
+export async function deleteEntry(id: string): Promise<void> {
+  await fetch(`/api/entries/${id}`, { method: 'DELETE' });
 }
 
 // --- Projects ---
-export function getProjects(): Project[] {
-  return getAll<Project>(KEYS.projects);
+export async function getProjects(): Promise<Project[]> {
+  try {
+    const res = await fetch('/api/projects');
+    if (!res.ok) return [];
+    return await res.json();
+  } catch { return []; }
 }
-export function addProject(project: Omit<Project, 'id'>): Project {
-  const items = getProjects();
-  const newItem = { ...project, id: generateId() };
-  items.unshift(newItem);
-  saveAll(KEYS.projects, items);
-  return newItem;
+
+export async function addProject(project: Omit<Project, 'id'>): Promise<Project> {
+  const res = await fetch('/api/projects', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(project),
+  });
+  return await res.json();
 }
-export function updateProject(id: string, data: Partial<Project>): void {
-  const items = getProjects().map(p => (p.id === id ? { ...p, ...data } : p));
-  saveAll(KEYS.projects, items);
+
+export async function updateProject(id: string, data: Partial<Project>): Promise<void> {
+  await fetch(`/api/projects/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
 }
-export function deleteProject(id: string): void {
-  saveAll(KEYS.projects, getProjects().filter(p => p.id !== id));
+
+export async function deleteProject(id: string): Promise<void> {
+  await fetch(`/api/projects/${id}`, { method: 'DELETE' });
 }
 
 // --- Leads ---
-export function getLeads(): Lead[] {
-  return getAll<Lead>(KEYS.leads);
+export async function getLeads(): Promise<Lead[]> {
+  try {
+    const res = await fetch('/api/leads');
+    if (!res.ok) return [];
+    return await res.json();
+  } catch { return []; }
 }
-export function addLead(lead: Omit<Lead, 'id'>): Lead {
-  const items = getLeads();
-  const newItem = { ...lead, id: generateId() };
-  items.unshift(newItem);
-  saveAll(KEYS.leads, items);
-  return newItem;
+
+export async function addLead(lead: Omit<Lead, 'id'>): Promise<Lead> {
+  const res = await fetch('/api/leads', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(lead),
+  });
+  return await res.json();
 }
-export function updateLead(id: string, data: Partial<Lead>): void {
-  const items = getLeads().map(l => (l.id === id ? { ...l, ...data } : l));
-  saveAll(KEYS.leads, items);
+
+export async function updateLead(id: string, data: Partial<Lead>): Promise<void> {
+  await fetch(`/api/leads/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
 }
-export function deleteLead(id: string): void {
-  saveAll(KEYS.leads, getLeads().filter(l => l.id !== id));
+
+export async function deleteLead(id: string): Promise<void> {
+  await fetch(`/api/leads/${id}`, { method: 'DELETE' });
 }
 
 // --- Tasks ---
-export function getTasks(): Task[] {
-  return getAll<Task>(KEYS.tasks);
+export async function getTasks(): Promise<Task[]> {
+  try {
+    const res = await fetch('/api/tasks');
+    if (!res.ok) return [];
+    return await res.json();
+  } catch { return []; }
 }
-export function addTask(task: Omit<Task, 'id' | 'createdAt'>): Task {
-  const items = getTasks();
-  const newItem = { ...task, id: generateId(), createdAt: new Date().toISOString() };
-  items.unshift(newItem);
-  saveAll(KEYS.tasks, items);
-  return newItem;
+
+export async function addTask(task: Omit<Task, 'id' | 'createdAt'>): Promise<Task> {
+  const res = await fetch('/api/tasks', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(task),
+  });
+  return await res.json();
 }
-export function updateTask(id: string, data: Partial<Task>): void {
-  const items = getTasks().map(t => (t.id === id ? { ...t, ...data } : t));
-  saveAll(KEYS.tasks, items);
+
+export async function updateTask(id: string, data: Partial<Task>): Promise<void> {
+  await fetch(`/api/tasks/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
 }
-export function deleteTask(id: string): void {
-  saveAll(KEYS.tasks, getTasks().filter(t => t.id !== id));
+
+export async function deleteTask(id: string): Promise<void> {
+  await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
 }
-export function getOverdueTasks(): Task[] {
+
+export async function getOverdueTasks(): Promise<Task[]> {
+  const tasks = await getTasks();
   const today = todayStr();
-  return getTasks().filter(t => t.status !== 'Done' && t.dueDate && t.dueDate < today);
+  return tasks.filter(t => t.status !== 'Done' && t.dueDate && t.dueDate < today);
 }
 
 // --- KPI Calculations ---
@@ -148,107 +170,99 @@ export function todayStr(): string {
 }
 
 // --- Search utility ---
-export function globalSearch(query: string): {
+export async function globalSearch(query: string): Promise<{
   entries: DailyEntry[];
   projects: Project[];
   leads: Lead[];
   tasks: Task[];
-} {
+}> {
   const q = query.toLowerCase().trim();
   if (!q) return { entries: [], projects: [], leads: [], tasks: [] };
+
+  const [entries, projects, leads, tasks] = await Promise.all([
+    getEntries(), getProjects(), getLeads(), getTasks(),
+  ]);
+
   return {
-    entries: getEntries().filter(e => e.taskName.toLowerCase().includes(q) || e.notes.toLowerCase().includes(q)),
-    projects: getProjects().filter(p => p.name.toLowerCase().includes(q) || p.clientName.toLowerCase().includes(q)),
-    leads: getLeads().filter(l => l.clientName.toLowerCase().includes(q)),
-    tasks: getTasks().filter(t => t.title.toLowerCase().includes(q) || t.description.toLowerCase().includes(q)),
+    entries: entries.filter(e => e.taskName.toLowerCase().includes(q) || e.notes.toLowerCase().includes(q)),
+    projects: projects.filter(p => p.name.toLowerCase().includes(q) || p.clientName.toLowerCase().includes(q)),
+    leads: leads.filter(l => l.clientName.toLowerCase().includes(q)),
+    tasks: tasks.filter(t => t.title.toLowerCase().includes(q) || t.description.toLowerCase().includes(q)),
   };
 }
 
 // --- Settings ---
-const SETTINGS_KEY = 'ops_settings';
-
 const DEFAULT_SETTINGS: UserSettings = {
   dailyReminderTime: '10:00',
   overdueReminderTime: '09:00',
   whatsappNumber: '919723242591',
 };
 
-export function getSettings(): UserSettings {
-  if (typeof window === 'undefined') return DEFAULT_SETTINGS;
-  const raw = localStorage.getItem(SETTINGS_KEY);
-  if (!raw) return DEFAULT_SETTINGS;
+export async function getSettings(userId?: string): Promise<UserSettings> {
+  if (!userId) return DEFAULT_SETTINGS;
   try {
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    const res = await fetch(`/api/settings?userId=${userId}`);
+    if (!res.ok) return DEFAULT_SETTINGS;
+    const data = await res.json();
+    return { ...DEFAULT_SETTINGS, ...data };
   } catch {
     return DEFAULT_SETTINGS;
   }
 }
 
-export function saveSettings(settings: Partial<UserSettings>): void {
-  if (typeof window === 'undefined') return;
-  const current = getSettings();
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...current, ...settings }));
+export async function saveSettings(settings: Partial<UserSettings> & { userId: string }): Promise<void> {
+  await fetch('/api/settings', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(settings),
+  });
 }
 
 // --- Staff ---
-const STAFF_COLORS = [
-  '#6366f1', '#8b5cf6', '#a855f7', '#ec4899', '#f43f5e',
-  '#f97316', '#eab308', '#22c55e', '#14b8a6', '#06b6d4',
-  '#3b82f6', '#0ea5e9',
-];
-
-function pickColor(): string {
-  return STAFF_COLORS[Math.floor(Math.random() * STAFF_COLORS.length)];
+export async function getStaff(): Promise<StaffMember[]> {
+  try {
+    const res = await fetch('/api/staff');
+    if (!res.ok) return [];
+    return await res.json();
+  } catch { return []; }
 }
 
-function makeInitials(name: string): string {
-  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+export async function getActiveStaff(): Promise<StaffMember[]> {
+  const staff = await getStaff();
+  return staff.filter(s => s.active);
 }
 
-export function getStaff(): StaffMember[] {
-  return getAll<StaffMember>(KEYS.staff);
-}
-
-export function getActiveStaff(): StaffMember[] {
-  return getStaff().filter(s => s.active);
-}
-
-export function addStaff(data: Omit<StaffMember, 'id' | 'createdAt' | 'initials' | 'color'>): StaffMember {
-  const items = getStaff();
-  const newItem: StaffMember = {
-    ...data,
-    id: generateId(),
-    initials: makeInitials(data.name),
-    color: pickColor(),
-    createdAt: new Date().toISOString(),
-  };
-  items.unshift(newItem);
-  saveAll(KEYS.staff, items);
-  return newItem;
-}
-
-export function updateStaff(id: string, data: Partial<StaffMember>): void {
-  const items = getStaff().map(s => {
-    if (s.id !== id) return s;
-    const updated = { ...s, ...data };
-    if (data.name) updated.initials = makeInitials(data.name);
-    return updated;
+export async function addStaff(data: Omit<StaffMember, 'id' | 'createdAt' | 'initials' | 'color'> & { password?: string }): Promise<StaffMember> {
+  const res = await fetch('/api/staff', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
   });
-  saveAll(KEYS.staff, items);
+  return await res.json();
 }
 
-export function deleteStaff(id: string): void {
-  saveAll(KEYS.staff, getStaff().filter(s => s.id !== id));
+export async function updateStaff(id: string, data: Partial<StaffMember>): Promise<void> {
+  await fetch(`/api/staff/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
 }
 
-export function getStaffById(id: string): StaffMember | undefined {
-  return getStaff().find(s => s.id === id);
+export async function deleteStaff(id: string): Promise<void> {
+  await fetch(`/api/staff/${id}`, { method: 'DELETE' });
+}
+
+export async function getStaffById(id: string): Promise<StaffMember | undefined> {
+  const staff = await getStaff();
+  return staff.find(s => s.id === id);
 }
 
 // --- Approval Helpers ---
-export function getPendingApprovals(): { tasks: Task[]; entries: DailyEntry[] } {
+export async function getPendingApprovals(): Promise<{ tasks: Task[]; entries: DailyEntry[] }> {
+  const [tasks, entries] = await Promise.all([getTasks(), getEntries()]);
   return {
-    tasks: getTasks().filter(t => t.approval === 'Pending Review'),
-    entries: getEntries().filter(e => e.approval === 'Pending Review'),
+    tasks: tasks.filter(t => t.approval === 'Pending Review'),
+    entries: entries.filter(e => e.approval === 'Pending Review'),
   };
 }

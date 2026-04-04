@@ -1,0 +1,112 @@
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  password    String
+  role        String   @default("Staff")
+  initials    String
+  color       String   @default("#6366f1")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  assignedTasks   Task[]       @relation("TaskAssignee")
+  assignedEntries DailyEntry[] @relation("EntryAssignee")
+  settings        UserSettings?
+
+  @@map("users")
+}
+
+model DailyEntry {
+  id           String   @id @default(cuid())
+  date         String
+  taskName     String
+  category     String
+  projectId    String?
+  timeSpent    Float
+  status       String   @default("Pending")
+  notes        String   @default("")
+  assigneeId   String?
+  approval     String   @default("Not Submitted")
+  approvedBy   String?
+  approvalNote String?
+  createdAt    DateTime @default(now())
+
+  project  Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  assignee User?    @relation("EntryAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  @@map("daily_entries")
+}
+
+model Project {
+  id         String   @id @default(cuid())
+  name       String
+  clientName String
+  startDate  String
+  deadline   String
+  status     String   @default("Active")
+  progress   Int      @default(0)
+  revenue    Float    @default(0)
+  teamIds    String[] @default([])
+  createdAt  DateTime @default(now())
+
+  entries DailyEntry[]
+  tasks   Task[]
+
+  @@map("projects")
+}
+
+model Lead {
+  id            String   @id @default(cuid())
+  date          String
+  clientName    String
+  platform      String
+  proposalSent  Boolean  @default(false)
+  followUpDate  String   @default("")
+  status        String   @default("New")
+  dealValue     Float    @default(0)
+  createdAt     DateTime @default(now())
+
+  @@map("leads")
+}
+
+model Task {
+  id           String   @id @default(cuid())
+  title        String
+  description  String   @default("")
+  priority     String   @default("Medium")
+  dueDate      String   @default("")
+  projectId    String?
+  status       String   @default("To Do")
+  assigneeId   String?
+  approval     String   @default("Not Submitted")
+  approvedBy   String?
+  approvalNote String?
+  createdAt    DateTime @default(now())
+
+  project  Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  assignee User?    @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  @@map("tasks")
+}
+
+model UserSettings {
+  id                  String @id @default(cuid())
+  userId              String @unique
+  dailyReminderTime   String @default("10:00")
+  overdueReminderTime String @default("09:00")
+  whatsappNumber      String @default("919723242591")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
+}

@@ -55,11 +55,15 @@ export default function ReportsPage() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setEntries(getEntries());
-    setLeads(getLeads());
-    setProjects(getProjects());
-    setTasks(getTasks());
-    setMounted(true);
+    async function load() {
+      const [e, l, p, t] = await Promise.all([getEntries(), getLeads(), getProjects(), getTasks()]);
+      setEntries(e);
+      setLeads(l);
+      setProjects(p);
+      setTasks(t);
+      setMounted(true);
+    }
+    load();
   }, []);
 
   const { from, to } = getDateRange(range, customFrom, customTo);

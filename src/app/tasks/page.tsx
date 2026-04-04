@@ -60,10 +60,11 @@ export default function TasksPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [mounted, setMounted] = useState(false);
 
-  const reload = useCallback(() => {
-    setTasks(getTasks());
-    setProjects(getProjects());
-    setStaffList(getActiveStaff());
+  const reload = useCallback(async () => {
+    const [t, p, s] = await Promise.all([getTasks(), getProjects(), getActiveStaff()]);
+    setTasks(t);
+    setProjects(p);
+    setStaffList(s);
   }, []);
 
   useEffect(() => {
@@ -100,33 +101,33 @@ export default function TasksPage() {
     setShowModal(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.title.trim()) return;
     if (editId) {
-      updateTask(editId, form);
+      await updateTask(editId, form);
     } else {
-      addTask(form);
+      await addTask(form);
     }
     setShowModal(false);
-    reload();
+    await reload();
   };
 
-  const handleDelete = (id: string) => {
-    deleteTask(id);
-    reload();
+  const handleDelete = async (id: string) => {
+    await deleteTask(id);
+    await reload();
   };
 
-  const moveToNext = (task: Task) => {
+  const moveToNext = async (task: Task) => {
     const idx = STATUS_COLS.indexOf(task.status);
     if (idx < STATUS_COLS.length - 1) {
-      updateTask(task.id, { status: STATUS_COLS[idx + 1] });
-      reload();
+      await updateTask(task.id, { status: STATUS_COLS[idx + 1] });
+      await reload();
     }
   };
 
-  const submitForApproval = (task: Task) => {
-    updateTask(task.id, { approval: 'Pending Review' });
-    reload();
+  const submitForApproval = async (task: Task) => {
+    await updateTask(task.id, { approval: 'Pending Review' });
+    await reload();
   };
 
   const isOverdue = (task: Task) => task.status !== 'Done' && task.dueDate && task.dueDate < today;

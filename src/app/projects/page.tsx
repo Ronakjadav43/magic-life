@@ -41,7 +41,7 @@ export default function ProjectsPage() {
   const [form, setForm] = useState(defaultForm);
   const [mounted, setMounted] = useState(false);
 
-  const reload = useCallback(() => setProjects(getProjects()), []);
+  const reload = useCallback(async () => setProjects(await getProjects()), []);
 
   useEffect(() => {
     reload();
@@ -76,20 +76,20 @@ export default function ProjectsPage() {
     setShowModal(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name.trim()) return;
     if (editId) {
-      updateProject(editId, form);
+      await updateProject(editId, form);
     } else {
-      addProject(form);
+      await addProject(form);
     }
     setShowModal(false);
-    reload();
+    await reload();
   };
 
-  const handleDelete = (id: string) => {
-    deleteProject(id);
-    reload();
+  const handleDelete = async (id: string) => {
+    await deleteProject(id);
+    await reload();
   };
 
   const statusBadge = (status: ProjectStatus) => {

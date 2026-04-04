@@ -45,9 +45,10 @@ export default function DailyEntryPage() {
   const [form, setForm] = useState(defaultForm);
   const [mounted, setMounted] = useState(false);
 
-  const reload = useCallback(() => {
-    setEntries(getEntries());
-    setProjects(getProjects());
+  const reload = useCallback(async () => {
+    const [e, p] = await Promise.all([getEntries(), getProjects()]);
+    setEntries(e);
+    setProjects(p);
   }, []);
 
   useEffect(() => {
@@ -88,25 +89,25 @@ export default function DailyEntryPage() {
     setShowModal(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.taskName.trim()) return;
     if (editId) {
-      updateEntry(editId, form);
+      await updateEntry(editId, form);
     } else {
-      addEntry(form);
+      await addEntry(form);
     }
     setShowModal(false);
-    reload();
+    await reload();
   };
 
-  const handleDelete = (id: string) => {
-    deleteEntry(id);
-    reload();
+  const handleDelete = async (id: string) => {
+    await deleteEntry(id);
+    await reload();
   };
 
-  const handleToggleStatus = (entry: DailyEntry) => {
-    updateEntry(entry.id, { status: entry.status === 'Done' ? 'Pending' : 'Done' });
-    reload();
+  const handleToggleStatus = async (entry: DailyEntry) => {
+    await updateEntry(entry.id, { status: entry.status === 'Done' ? 'Pending' : 'Done' });
+    await reload();
   };
 
   const clearFilters = () => {

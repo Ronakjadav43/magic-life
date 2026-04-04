@@ -51,10 +51,14 @@ export default function KPIPage() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setEntries(getEntries());
-    setLeads(getLeads());
-    setProjects(getProjects());
-    setMounted(true);
+    async function load() {
+      const [e, l, p] = await Promise.all([getEntries(), getLeads(), getProjects()]);
+      setEntries(e);
+      setLeads(l);
+      setProjects(p);
+      setMounted(true);
+    }
+    load();
   }, []);
 
   // Build daily hours chart data

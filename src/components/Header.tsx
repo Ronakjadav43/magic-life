@@ -27,8 +27,9 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const greeting = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
 
   useEffect(() => {
-    setOverdueCount(getOverdueTasks().length);
-    const interval = setInterval(() => setOverdueCount(getOverdueTasks().length), 30000);
+    const loadOverdue = async () => setOverdueCount((await getOverdueTasks()).length);
+    loadOverdue();
+    const interval = setInterval(loadOverdue, 30000);
     return () => clearInterval(interval);
   }, []);
 

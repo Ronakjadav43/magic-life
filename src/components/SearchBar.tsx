@@ -21,9 +21,10 @@ export default function SearchBar() {
 
   useEffect(() => {
     if (query.trim().length >= 2) {
-      const r = globalSearch(query);
-      setResults(r);
-      setOpen(true);
+      globalSearch(query).then(r => {
+        setResults(r);
+        setOpen(true);
+      });
     } else {
       setResults(null);
       setOpen(false);

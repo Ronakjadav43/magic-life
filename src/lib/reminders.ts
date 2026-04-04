@@ -1,5 +1,5 @@
 // Reminder system for the Personal Ops System
-import { getEntries, getOverdueTasks, todayStr, generateId, getSettings } from './store';
+import { getEntries, getOverdueTasks, todayStr, getSettings } from './store';
 import { sendDailyReminderToWhatsApp, sendOverdueToWhatsApp } from './whatsapp';
 import type { AppNotification } from './types';
 
@@ -7,6 +7,10 @@ const REMINDER_KEY = 'ops_last_reminder';
 const ENTRY_REMINDER_KEY = 'ops_last_entry_reminder';
 
 type AddNotification = (notification: AppNotification) => void;
+
+function generateId(): string {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+}
 
 function getLastReminderDate(key: string): string | null {
   if (typeof window === 'undefined') return null;
@@ -53,19 +57,20 @@ function sendBrowserNotification(title: string, body: string): void {
 }
 
 // Check at user-set time if no entry logged today
-function checkDailyEntryReminder(addNotification: AddNotification): void {
+async function checkDailyEntryReminder(addNotification: AddNotification): Promise<void> {
   const today = todayStr();
   const lastReminder = getLastReminderDate(ENTRY_REMINDER_KEY);
 
   // Only remind once per day
   if (lastReminder === today) return;
 
-  const settings = getSettings();
+  const settings = await getSettings();
   const reminderTime = settings.dailyReminderTime || '10:00';
 
   // Trigger at user-configured time or later
   if (isTimeReached(reminderTime)) {
-    const todayEntries = getEntries().filter(e => e.date === today);
+    const entries = await getEntries();
+    const todayEntries = entries.filter(e => e.date === today);
     if (todayEntries.length === 0) {
       const notification: AppNotification = {
         id: generateId(),
@@ -83,20 +88,20 @@ function checkDailyEntryReminder(addNotification: AddNotification): void {
 }
 
 // Check for overdue tasks at user-set time
-function checkOverdueTasks(addNotification: AddNotification): void {
+async function checkOverdueTasks(addNotification: AddNotification): Promise<void> {
   const today = todayStr();
   const lastReminder = getLastReminderDate(REMINDER_KEY);
 
   // Only remind once per day
   if (lastReminder === today) return;
 
-  const settings = getSettings();
+  const settings = await getSettings();
   const overdueTime = settings.overdueReminderTime || '09:00';
 
   // Trigger at user-configured time or later
   if (!isTimeReached(overdueTime)) return;
 
-  const overdue = getOverdueTasks();
+  const overdue = await getOverdueTasks();
   if (overdue.length > 0) {
     const notification: AppNotification = {
       id: generateId(),

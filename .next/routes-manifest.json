@@ -1,0 +1,154 @@
+{
+  "version": 3,
+  "pages404": true,
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/api/entries/[id]",
+      "regex": "^/api/entries/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/entries/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/leads/[id]",
+      "regex": "^/api/leads/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/leads/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/projects/[id]",
+      "regex": "^/api/projects/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/projects/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/staff/[id]",
+      "regex": "^/api/staff/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/staff/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/tasks/[id]",
+      "regex": "^/api/tasks/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/tasks/(?<nxtPid>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/approvals",
+      "regex": "^/approvals(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/approvals(?:/)?$"
+    },
+    {
+      "page": "/daily-entry",
+      "regex": "^/daily\\-entry(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/daily\\-entry(?:/)?$"
+    },
+    {
+      "page": "/kpi",
+      "regex": "^/kpi(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/kpi(?:/)?$"
+    },
+    {
+      "page": "/leads",
+      "regex": "^/leads(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/leads(?:/)?$"
+    },
+    {
+      "page": "/login",
+      "regex": "^/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/login(?:/)?$"
+    },
+    {
+      "page": "/projects",
+      "regex": "^/projects(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/projects(?:/)?$"
+    },
+    {
+      "page": "/reports",
+      "regex": "^/reports(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/reports(?:/)?$"
+    },
+    {
+      "page": "/settings",
+      "regex": "^/settings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/settings(?:/)?$"
+    },
+    {
+      "page": "/staff",
+      "regex": "^/staff(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/staff(?:/)?$"
+    },
+    {
+      "page": "/tasks",
+      "regex": "^/tasks(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tasks(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSuffix": ".prefetch.rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments"
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

@@ -26,12 +26,18 @@ export default function Dashboard() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setEntries(getEntries());
-    setProjects(getProjects());
-    setLeads(getLeads());
-    setTasks(getTasks());
-    setOverdue(getOverdueTasks());
-    setMounted(true);
+    async function load() {
+      const [e, p, l, t, o] = await Promise.all([
+        getEntries(), getProjects(), getLeads(), getTasks(), getOverdueTasks(),
+      ]);
+      setEntries(e);
+      setProjects(p);
+      setLeads(l);
+      setTasks(t);
+      setOverdue(o);
+      setMounted(true);
+    }
+    load();
   }, []);
 
   if (!mounted) return <div className="page"><div className="page-title">Loading...</div></div>;
