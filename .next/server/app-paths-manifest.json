@@ -1,6 +1,7 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
   "/api/auth/login/route": "app/api/auth/login/route.js",
+  "/api/health/route": "app/api/health/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/api/entries/route": "app/api/entries/route.js",
   "/api/entries/[id]/route": "app/api/entries/[id]/route.js",
   "/api/leads/[id]/route": "app/api/leads/[id]/route.js",
@@ -12,15 +13,15 @@
   "/api/staff/route": "app/api/staff/route.js",
   "/api/tasks/[id]/route": "app/api/tasks/[id]/route.js",
   "/api/tasks/route": "app/api/tasks/route.js",
+  "/leads/page": "app/leads/page.js",
+  "/kpi/page": "app/kpi/page.js",
   "/approvals/page": "app/approvals/page.js",
   "/daily-entry/page": "app/daily-entry/page.js",
-  "/kpi/page": "app/kpi/page.js",
-  "/leads/page": "app/leads/page.js",
   "/page": "app/page.js",
   "/login/page": "app/login/page.js",
   "/reports/page": "app/reports/page.js",
   "/projects/page": "app/projects/page.js",
-  "/settings/page": "app/settings/page.js",
   "/staff/page": "app/staff/page.js",
+  "/settings/page": "app/settings/page.js",
   "/tasks/page": "app/tasks/page.js"
 }

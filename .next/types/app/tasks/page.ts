@@ -1,4 +1,4 @@
-// File: C:\Users\Admin\Desktop\Magic Life\magic-life\src\app\tasks\page.tsx
+// File: C:\Users\ronak\OneDrive\Desktop\RonakJadav\magic-life\src\app\tasks\page.tsx
 import * as entry from '../../../../src/app/tasks/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

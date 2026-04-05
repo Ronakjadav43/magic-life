@@ -5,14 +5,14 @@
   "devFiles": [],
   "ampDevFiles": [],
   "lowPriorityFiles": [
-    "static/Vgur_chTILa0HWCBL3J_g/_buildManifest.js",
-    "static/Vgur_chTILa0HWCBL3J_g/_ssgManifest.js"
+    "static/2t3ywyn9PHOuc9625_U1l/_buildManifest.js",
+    "static/2t3ywyn9PHOuc9625_U1l/_ssgManifest.js"
   ],
   "rootMainFiles": [
     "static/chunks/webpack-adea91aca01832b6.js",
     "static/chunks/4bd1b696-409494caf8c83275.js",
     "static/chunks/255-ce5b5dc0b5b8f3aa.js",
-    "static/chunks/main-app-23351d64d85a523b.js"
+    "static/chunks/main-app-dc7bcba8697df1cc.js"
   ],
   "rootMainFilesTree": {},
   "pages": {

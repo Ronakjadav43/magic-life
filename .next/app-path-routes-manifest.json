@@ -1,6 +1,7 @@
 {
-  "/_not-found/page": "/_not-found",
   "/api/auth/login/route": "/api/auth/login",
+  "/api/health/route": "/api/health",
+  "/_not-found/page": "/_not-found",
   "/api/entries/route": "/api/entries",
   "/api/entries/[id]/route": "/api/entries/[id]",
   "/api/leads/[id]/route": "/api/leads/[id]",
@@ -12,15 +13,15 @@
   "/api/staff/route": "/api/staff",
   "/api/tasks/[id]/route": "/api/tasks/[id]",
   "/api/tasks/route": "/api/tasks",
+  "/leads/page": "/leads",
+  "/kpi/page": "/kpi",
   "/approvals/page": "/approvals",
   "/daily-entry/page": "/daily-entry",
-  "/kpi/page": "/kpi",
-  "/leads/page": "/leads",
   "/page": "/",
   "/login/page": "/login",
   "/reports/page": "/reports",
   "/projects/page": "/projects",
-  "/settings/page": "/settings",
   "/staff/page": "/staff",
+  "/settings/page": "/settings",
   "/tasks/page": "/tasks"
 }
