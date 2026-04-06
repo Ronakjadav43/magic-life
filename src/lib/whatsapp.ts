@@ -89,9 +89,9 @@ export async function sendDailyReminderToWhatsApp(): Promise<void> {
 // Send full daily task summary (all active tasks) to WhatsApp
 export async function sendTaskSummaryToWhatsApp(): Promise<void> {
   const tasks = await getTasks();
-  const todo = tasks.filter(t => t.status === 'To Do');
-  const inProgress = tasks.filter(t => t.status === 'In Progress');
-  const done = tasks.filter(t => t.status === 'Done');
+  const todo = tasks.filter(t => t.status === 'todo');
+  const inProgress = tasks.filter(t => t.status === 'in_progress');
+  const done = tasks.filter(t => t.status === 'done');
   const overdue = await getOverdueTasks();
   const today = todayStr();
 

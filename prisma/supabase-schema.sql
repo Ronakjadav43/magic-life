@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS "daily_entries" (
     "taskName" TEXT NOT NULL,
     "category" TEXT NOT NULL,
     "projectId" TEXT,
+    "taskId" TEXT,
     "timeSpent" DOUBLE PRECISION NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'Pending',
     "notes" TEXT NOT NULL DEFAULT '',
@@ -74,14 +75,44 @@ CREATE TABLE IF NOT EXISTS "tasks" (
     "priority" TEXT NOT NULL DEFAULT 'Medium',
     "dueDate" TEXT NOT NULL DEFAULT '',
     "projectId" TEXT,
-    "status" TEXT NOT NULL DEFAULT 'To Do',
+    "status" TEXT NOT NULL DEFAULT 'backlog',
     "assigneeId" TEXT,
-    "approval" TEXT NOT NULL DEFAULT 'Not Submitted',
-    "approvedBy" TEXT,
-    "approvalNote" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "tasks_pkey" PRIMARY KEY ("id")
+);
+
+DO $$ BEGIN
+  ALTER TABLE "tasks" DROP COLUMN "approval";
+  ALTER TABLE "tasks" DROP COLUMN "approvedBy";
+  ALTER TABLE "tasks" DROP COLUMN "approvalNote";
+  ALTER TABLE "tasks" ADD COLUMN "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+  ALTER TABLE "tasks" ALTER COLUMN "status" SET DEFAULT 'backlog';
+EXCEPTION WHEN undefined_column THEN null; END $$;
+
+-- CreateTable
+CREATE TABLE IF NOT EXISTS "task_activities" (
+    "id" TEXT NOT NULL,
+    "taskId" TEXT NOT NULL,
+    "action" TEXT NOT NULL,
+    "oldStatus" TEXT,
+    "newStatus" TEXT,
+    "userId" TEXT,
+    "timestamp" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "task_activities_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE IF NOT EXISTS "comments" (
+    "id" TEXT NOT NULL,
+    "taskId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "comment" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "comments_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -112,6 +143,13 @@ DO $$ BEGIN
     FOREIGN KEY ("assigneeId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 EXCEPTION WHEN duplicate_object THEN null; END $$;
 
+ALTER TABLE "daily_entries" ADD COLUMN IF NOT EXISTS "taskId" TEXT;
+
+DO $$ BEGIN
+  ALTER TABLE "daily_entries" ADD CONSTRAINT "daily_entries_taskId_fkey"
+    FOREIGN KEY ("taskId") REFERENCES "tasks"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
 DO $$ BEGIN
   ALTER TABLE "tasks" ADD CONSTRAINT "tasks_projectId_fkey"
     FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -124,5 +162,25 @@ EXCEPTION WHEN duplicate_object THEN null; END $$;
 
 DO $$ BEGIN
   ALTER TABLE "user_settings" ADD CONSTRAINT "user_settings_userId_fkey"
+    FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  ALTER TABLE "task_activities" ADD CONSTRAINT "task_activities_taskId_fkey"
+    FOREIGN KEY ("taskId") REFERENCES "tasks"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  ALTER TABLE "task_activities" ADD CONSTRAINT "task_activities_userId_fkey"
+    FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  ALTER TABLE "comments" ADD CONSTRAINT "comments_taskId_fkey"
+    FOREIGN KEY ("taskId") REFERENCES "tasks"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  ALTER TABLE "comments" ADD CONSTRAINT "comments_userId_fkey"
     FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 EXCEPTION WHEN duplicate_object THEN null; END $$;

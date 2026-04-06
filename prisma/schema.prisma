@@ -23,6 +23,8 @@ model User {
   assignedTasks   Task[]       @relation("TaskAssignee")
   assignedEntries DailyEntry[] @relation("EntryAssignee")
   settings        UserSettings?
+  taskActivities  TaskActivity[]
+  comments        Comment[]
 
   @@map("users")
 }
@@ -33,6 +35,8 @@ model DailyEntry {
   taskName     String
   category     String
   projectId    String?
+  taskId       String?
+  linkedTaskIds String[] @default([])
   timeSpent    Float
   status       String   @default("Pending")
   notes        String   @default("")
@@ -43,6 +47,7 @@ model DailyEntry {
   createdAt    DateTime @default(now())
 
   project  Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  task     Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
   assignee User?    @relation("EntryAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
 
   @@map("daily_entries")
@@ -87,15 +92,16 @@ model Task {
   priority     String   @default("Medium")
   dueDate      String   @default("")
   projectId    String?
-  status       String   @default("To Do")
+  status       String   @default("backlog")
   assigneeId   String?
-  approval     String   @default("Not Submitted")
-  approvedBy   String?
-  approvalNote String?
   createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  project  Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  assignee User?    @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  project    Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  assignee   User?          @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  activities TaskActivity[]
+  comments   Comment[]
+  dailyEntries DailyEntry[]
 
   @@map("tasks")
 }
@@ -110,4 +116,32 @@ model UserSettings {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_settings")
+}
+
+model TaskActivity {
+  id         String   @id @default(cuid())
+  taskId     String
+  action     String
+  oldStatus  String?
+  newStatus  String?
+  userId     String?
+  timestamp  DateTime @default(now())
+
+  task Task  @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("task_activities")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  taskId    String
+  userId    String
+  comment   String
+  createdAt DateTime @default(now())
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
 }

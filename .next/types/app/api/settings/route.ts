@@ -1,4 +1,4 @@
-// File: C:\Users\ronak\OneDrive\Desktop\RonakJadav\magic-life\src\app\api\settings\route.ts
+// File: C:\Users\Admin\Desktop\Magic Life\magic-life\src\app\api\settings\route.ts
 import * as entry from '../../../../../src/app/api/settings/route.js'
 import type { NextRequest } from 'next/server.js'
 

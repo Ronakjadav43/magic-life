@@ -114,12 +114,12 @@ async function main() {
   await prisma.task.createMany({
     skipDuplicates: true,
     data: [
-      { title: 'Setup CI/CD Pipeline', description: 'Configure GitHub Actions for auto-deploy', priority: 'High', dueDate: nextWeek, projectId: project1.id, status: 'In Progress', assigneeId: staffUser.id },
-      { title: 'Design System Components', description: 'Create reusable UI components library', priority: 'Medium', dueDate: nextWeek, projectId: project1.id, status: 'To Do', assigneeId: staffUser.id },
-      { title: 'API Integration', description: 'Connect frontend to backend REST API', priority: 'Urgent', dueDate: overdue, projectId: project1.id, status: 'To Do', assigneeId: staffUser.id },
-      { title: 'Code Review Sprint 2', description: 'Review all PRs from last sprint', priority: 'Medium', dueDate: today, projectId: project2.id, status: 'In Progress', assigneeId: manager.id },
-      { title: 'Database Migration', description: 'Migrate from MongoDB to PostgreSQL', priority: 'High', dueDate: nextWeek, projectId: project1.id, status: 'Done', assigneeId: staffUser.id },
-      { title: 'User Testing Feedback', description: 'Collect and organize user feedback from beta testing', priority: 'Low', dueDate: nextWeek, projectId: project2.id, status: 'To Do', assigneeId: manager.id, approval: 'Pending Review' },
+      { title: 'Setup CI/CD Pipeline', description: 'Configure GitHub Actions for auto-deploy', priority: 'High', dueDate: nextWeek, projectId: project1.id, status: 'in_progress', assigneeId: staffUser.id },
+      { title: 'Design System Components', description: 'Create reusable UI components library', priority: 'Medium', dueDate: nextWeek, projectId: project1.id, status: 'todo', assigneeId: staffUser.id },
+      { title: 'API Integration', description: 'Connect frontend to backend REST API', priority: 'Urgent', dueDate: overdue, projectId: project1.id, status: 'todo', assigneeId: staffUser.id },
+      { title: 'Code Review Sprint 2', description: 'Review all PRs from last sprint', priority: 'Medium', dueDate: today, projectId: project2.id, status: 'in_progress', assigneeId: manager.id },
+      { title: 'Database Migration', description: 'Migrate from MongoDB to PostgreSQL', priority: 'High', dueDate: nextWeek, projectId: project1.id, status: 'done', assigneeId: staffUser.id },
+      { title: 'User Testing Feedback', description: 'Collect and organize user feedback from beta testing', priority: 'Low', dueDate: nextWeek, projectId: project2.id, status: 'review', assigneeId: manager.id },
     ],
   });
 

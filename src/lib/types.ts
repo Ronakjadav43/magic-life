@@ -12,6 +12,9 @@ export interface DailyEntry {
   taskName: string;
   category: Category;
   projectId: string | null;
+  taskId?: string | null;
+  linkedTaskIds?: string[];
+  task?: Task | null;
   timeSpent: number; // hours
   status: EntryStatus;
   notes: string;
@@ -45,7 +48,15 @@ export interface Lead {
 }
 
 export type TaskPriority = 'Low' | 'Medium' | 'High' | 'Urgent';
-export type TaskStatus = 'To Do' | 'In Progress' | 'Done';
+export type TaskStatus = 'backlog' | 'todo' | 'in_progress' | 'review' | 'done';
+
+export const STATUS = {
+  BACKLOG: "backlog",
+  TODO: "todo",
+  IN_PROGRESS: "in_progress",
+  REVIEW: "review",
+  DONE: "done"
+} as const;
 
 export interface Task {
   id: string;
@@ -56,10 +67,27 @@ export interface Task {
   projectId: string | null;
   status: TaskStatus;
   createdAt: string;
+  updatedAt: string;
   assigneeId?: string | null;
-  approval?: ApprovalStatus;
-  approvedBy?: string | null;
-  approvalNote?: string;
+}
+
+export interface TaskActivity {
+  id: string;
+  taskId: string;
+  action: string;
+  oldStatus?: string | null;
+  newStatus?: string | null;
+  userId?: string | null;
+  timestamp: string;
+}
+
+export interface Comment {
+  id: string;
+  taskId: string;
+  userId: string;
+  comment: string;
+  createdAt: string;
+  user?: StaffMember | null; // useful for nested relation
 }
 
 export interface KPIData {

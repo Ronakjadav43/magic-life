@@ -24,12 +24,19 @@ export async function POST(request: Request) {
         priority: body.priority || 'Medium',
         dueDate: body.dueDate || '',
         projectId: body.projectId || null,
-        status: body.status || 'To Do',
+        status: body.status || 'backlog',
         assigneeId: body.assigneeId || null,
-        approval: body.approval || 'Not Submitted',
-        approvedBy: body.approvedBy || null,
-        approvalNote: body.approvalNote || null,
+        activities: {
+          create: {
+            action: 'created',
+            newStatus: body.status || 'backlog',
+            userId: body.assigneeId || null,
+          }
+        }
       },
+      include: {
+        activities: true,
+      }
     });
     return NextResponse.json(task, { status: 201 });
   } catch (error) {

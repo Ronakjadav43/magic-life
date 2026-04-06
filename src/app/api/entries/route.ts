@@ -5,7 +5,10 @@ export async function GET() {
   try {
     const entries = await prisma.dailyEntry.findMany({
       orderBy: { createdAt: 'desc' },
-      include: { assignee: { select: { id: true, name: true, initials: true, color: true } } },
+      include: { 
+        assignee: { select: { id: true, name: true, initials: true, color: true } },
+        task: true
+      },
     });
     return NextResponse.json(entries);
   } catch (error) {
@@ -23,6 +26,8 @@ export async function POST(request: Request) {
         taskName: body.taskName,
         category: body.category,
         projectId: body.projectId || null,
+        taskId: body.taskId || null,
+        linkedTaskIds: body.linkedTaskIds || [],
         timeSpent: parseFloat(body.timeSpent) || 0,
         status: body.status || 'Pending',
         notes: body.notes || '',

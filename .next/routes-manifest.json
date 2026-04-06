@@ -58,6 +58,22 @@
         "nxtPid": "nxtPid"
       },
       "namedRegex": "^/api/tasks/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/tasks/[id]/activities",
+      "regex": "^/api/tasks/([^/]+?)/activities(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/tasks/(?<nxtPid>[^/]+?)/activities(?:/)?$"
+    },
+    {
+      "page": "/api/tasks/[id]/comments",
+      "regex": "^/api/tasks/([^/]+?)/comments(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/tasks/(?<nxtPid>[^/]+?)/comments(?:/)?$"
     }
   ],
   "staticRoutes": [

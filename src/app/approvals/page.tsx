@@ -6,10 +6,10 @@ import {
   ChevronDown, ChevronUp, User, Calendar, MessageSquare,
 } from 'lucide-react';
 import {
-  getTasks, updateTask, getEntries, updateEntry,
+  getEntries, updateEntry,
   getStaff,
 } from '@/lib/store';
-import type { Task, DailyEntry, StaffMember, ApprovalStatus } from '@/lib/types';
+import type { DailyEntry, StaffMember, ApprovalStatus } from '@/lib/types';
 
 type TabType = 'pending' | 'approved' | 'rejected' | 'all';
 
@@ -28,7 +28,6 @@ const STATUS_BG: Record<ApprovalStatus, string> = {
 };
 
 export default function ApprovalsPage() {
-  const [tasks, setTasks] = useState<Task[]>([]);
   const [entries, setEntries] = useState<DailyEntry[]>([]);
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [tab, setTab] = useState<TabType>('pending');
@@ -37,8 +36,7 @@ export default function ApprovalsPage() {
   const [mounted, setMounted] = useState(false);
 
   const reload = useCallback(async () => {
-    const [t, e, s] = await Promise.all([getTasks(), getEntries(), getStaff()]);
-    setTasks(t);
+    const [e, s] = await Promise.all([getEntries(), getStaff()]);
     setEntries(e);
     setStaff(s);
   }, []);
@@ -69,19 +67,11 @@ export default function ApprovalsPage() {
     return true;
   };
 
-  const filteredTasks = tasks.filter(t => t.approval && filterByTab(t.approval));
   const filteredEntries = entries.filter(e => e.approval && filterByTab(e.approval));
 
-  const pendingCount = tasks.filter(t => t.approval === 'Pending Review').length + entries.filter(e => e.approval === 'Pending Review').length;
-  const approvedCount = tasks.filter(t => t.approval === 'Approved').length + entries.filter(e => e.approval === 'Approved').length;
-  const rejectedCount = tasks.filter(t => t.approval === 'Rejected').length + entries.filter(e => e.approval === 'Rejected').length;
-
-  const handleApproveTask = async (id: string, status: 'Approved' | 'Rejected') => {
-    await updateTask(id, { approval: status, approvedBy: 'Admin', approvalNote: approvalNote || undefined });
-    setApprovalNote('');
-    setExpandedId(null);
-    await reload();
-  };
+  const pendingCount = entries.filter(e => e.approval === 'Pending Review').length;
+  const approvedCount = entries.filter(e => e.approval === 'Approved').length;
+  const rejectedCount = entries.filter(e => e.approval === 'Rejected').length;
 
   const handleApproveEntry = async (id: string, status: 'Approved' | 'Rejected') => {
     await updateEntry(id, { approval: status, approvedBy: 'Admin', approvalNote: approvalNote || undefined });
@@ -131,7 +121,7 @@ export default function ApprovalsPage() {
           { key: 'pending' as TabType, label: 'Pending Review', count: pendingCount, icon: Clock },
           { key: 'approved' as TabType, label: 'Approved', count: approvedCount, icon: CheckCircle2 },
           { key: 'rejected' as TabType, label: 'Rejected', count: rejectedCount, icon: XCircle },
-          { key: 'all' as TabType, label: 'All', count: filteredTasks.length + filteredEntries.length, icon: FileCheck },
+          { key: 'all' as TabType, label: 'All', count: filteredEntries.length, icon: FileCheck },
         ]).map(t => (
           <button
             key={t.key}
@@ -145,7 +135,7 @@ export default function ApprovalsPage() {
       </div>
 
       {/* Content */}
-      {filteredTasks.length === 0 && filteredEntries.length === 0 ? (
+      {filteredEntries.length === 0 ? (
         <div className="chart-card">
           <div className="empty-state">
             <div className="empty-state-icon"><FileCheck size={28} /></div>
@@ -155,94 +145,6 @@ export default function ApprovalsPage() {
         </div>
       ) : (
         <div className="approval-list">
-          {/* Tasks */}
-          {filteredTasks.length > 0 && (
-            <>
-              <h3 className="approval-section-title">📋 Tasks ({filteredTasks.length})</h3>
-              {filteredTasks.map(task => {
-                const assignee = getStaffMember(task.assigneeId);
-                const isExpanded = expandedId === `task-${task.id}`;
-                return (
-                  <div key={task.id} className="approval-item">
-                    <div className="approval-item-header" onClick={() => toggleExpand(`task-${task.id}`)}>
-                      <div className="approval-item-left">
-                        <div
-                          className="approval-status-dot"
-                          style={{ background: STATUS_COLORS[task.approval || 'Not Submitted'] }}
-                        />
-                        <div>
-                          <div className="approval-item-title">{task.title}</div>
-                          <div className="approval-item-meta">
-                            {assignee && (
-                              <span className="approval-meta-tag">
-                                <User size={11} /> {assignee.name}
-                              </span>
-                            )}
-                            <span className="approval-meta-tag">
-                              <Calendar size={11} /> {task.dueDate || 'No date'}
-                            </span>
-                            <span className={`badge ${task.priority === 'Urgent' ? 'badge-overdue' : task.priority === 'High' ? 'badge-pending' : 'badge-active'}`}>
-                              {task.priority}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="approval-item-right">
-                        <span
-                          className="approval-status-badge"
-                          style={{
-                            color: STATUS_COLORS[task.approval || 'Not Submitted'],
-                            background: STATUS_BG[task.approval || 'Not Submitted'],
-                          }}
-                        >
-                          {task.approval}
-                        </span>
-                        {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                      </div>
-                    </div>
-
-                    {isExpanded && (
-                      <div className="approval-item-body">
-                        {task.description && (
-                          <p className="approval-item-desc">{task.description}</p>
-                        )}
-                        {task.approvalNote && (
-                          <div className="approval-note-display">
-                            <MessageSquare size={14} /> <strong>Note:</strong> {task.approvalNote}
-                          </div>
-                        )}
-                        {task.approval === 'Pending Review' && (
-                          <div className="approval-actions">
-                            <textarea
-                              className="form-control approval-note-input"
-                              placeholder="Add approval note (optional)..."
-                              rows={2}
-                              value={approvalNote}
-                              onChange={e => setApprovalNote(e.target.value)}
-                            />
-                            <div className="approval-buttons">
-                              <button
-                                className="btn btn-approve"
-                                onClick={() => handleApproveTask(task.id, 'Approved')}
-                              >
-                                <CheckCircle2 size={16} /> Approve
-                              </button>
-                              <button
-                                className="btn btn-reject"
-                                onClick={() => handleApproveTask(task.id, 'Rejected')}
-                              >
-                                <XCircle size={16} /> Reject
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </>
-          )}
 
           {/* Entries */}
           {filteredEntries.length > 0 && (

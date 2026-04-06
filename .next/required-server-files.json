@@ -99,7 +99,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "C:\\Users\\ronak",
+    "outputFileTracingRoot": "C:\\Users\\Admin\\Desktop\\Magic Life\\magic-life",
     "experimental": {
       "useSkewCookie": false,
       "cacheLife": {
@@ -158,7 +158,7 @@
       "middlewarePrefetch": "flexible",
       "optimisticClientCache": true,
       "manualClientBasePath": false,
-      "cpus": 3,
+      "cpus": 15,
       "memoryBasedWorkersCount": false,
       "imgOptConcurrency": null,
       "imgOptTimeoutInSeconds": 7,
@@ -289,11 +289,11 @@
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.ts",
     "turbopack": {
-      "root": "C:\\Users\\ronak"
+      "root": "C:\\Users\\Admin\\Desktop\\Magic Life\\magic-life"
     }
   },
-  "appDir": "C:\\Users\\ronak\\OneDrive\\Desktop\\RonakJadav\\magic-life",
-  "relativeAppDir": "OneDrive\\Desktop\\RonakJadav\\magic-life",
+  "appDir": "C:\\Users\\Admin\\Desktop\\Magic Life\\magic-life",
+  "relativeAppDir": "",
   "files": [
     ".next\\routes-manifest.json",
     ".next\\server\\pages-manifest.json",

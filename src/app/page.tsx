@@ -49,7 +49,7 @@ export default function Dashboard() {
   const pipelineLeads = leads.filter(l => l.status !== 'Closed');
   const totalRevenue = calcProjectRevenue(projects);
   const consistency = calcConsistency(entries, 30);
-  const activeTasks = tasks.filter(t => t.status !== 'Done');
+  const activeTasks = tasks.filter(t => t.status !== 'done');
 
   // recent activity
   const recentEntries = entries.slice(0, 5);
@@ -172,7 +172,7 @@ export default function Dashboard() {
           <div className="activity-list" style={{ marginTop: 8 }}>
             {activeTasks.slice(0, 5).map(t => (
               <div key={t.id} className="activity-item">
-                <div className={`activity-dot ${t.status === 'In Progress' ? 'blue' : 'amber'}`} />
+                <div className={`activity-dot ${t.status === 'in_progress' ? 'blue' : 'amber'}`} />
                 <div className="activity-text">
                   <strong>{t.title}</strong>
                   <span style={{ color: 'var(--text-muted)', marginLeft: 8, fontSize: 12 }}>

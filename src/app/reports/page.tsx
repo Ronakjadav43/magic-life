@@ -87,7 +87,7 @@ export default function ReportsPage() {
   const leadsClosed = filteredLeads.filter(l => l.status === 'Closed').length;
   const revenueEarned = filteredLeads.filter(l => l.status === 'Closed').reduce((s, l) => s + l.dealValue, 0)
     + calcProjectRevenue(projects);
-  const tasksCompleted = filteredTasks.filter(t => t.status === 'Done').length;
+  const tasksCompleted = filteredTasks.filter(t => t.status === 'done').length;
 
   // Category breakdown
   const categoryBreakdown = useMemo(() => {

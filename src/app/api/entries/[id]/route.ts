@@ -12,6 +12,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         ...(body.taskName !== undefined && { taskName: body.taskName }),
         ...(body.category !== undefined && { category: body.category }),
         ...(body.projectId !== undefined && { projectId: body.projectId || null }),
+        ...(body.taskId !== undefined && { taskId: body.taskId || null }),
+        ...(body.linkedTaskIds !== undefined && { linkedTaskIds: body.linkedTaskIds }),
         ...(body.timeSpent !== undefined && { timeSpent: parseFloat(body.timeSpent) || 0 }),
         ...(body.status !== undefined && { status: body.status }),
         ...(body.notes !== undefined && { notes: body.notes }),

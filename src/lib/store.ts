@@ -100,7 +100,7 @@ export async function getTasks(): Promise<Task[]> {
   } catch { return []; }
 }
 
-export async function addTask(task: Omit<Task, 'id' | 'createdAt'>): Promise<Task> {
+export async function addTask(task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>): Promise<Task> {
   const res = await fetch('/api/tasks', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -124,8 +124,34 @@ export async function deleteTask(id: string): Promise<void> {
 export async function getOverdueTasks(): Promise<Task[]> {
   const tasks = await getTasks();
   const today = todayStr();
-  return tasks.filter(t => t.status !== 'Done' && t.dueDate && t.dueDate < today);
+  return tasks.filter(t => t.status !== 'done' && t.dueDate && t.dueDate < today);
 }
+
+export async function getTaskActivities(taskId: string): Promise<any[]> {
+  try {
+    const res = await fetch(`/api/tasks/${taskId}/activities`);
+    if (!res.ok) return [];
+    return await res.json();
+  } catch { return []; }
+}
+
+export async function getTaskComments(taskId: string): Promise<any[]> {
+  try {
+    const res = await fetch(`/api/tasks/${taskId}/comments`);
+    if (!res.ok) return [];
+    return await res.json();
+  } catch { return []; }
+}
+
+export async function addTaskComment(taskId: string, userId: string, comment: string): Promise<any> {
+  const res = await fetch(`/api/tasks/${taskId}/comments`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, comment }),
+  });
+  return await res.json();
+}
+
 
 // --- KPI Calculations ---
 export function calcHoursPerDay(entries: DailyEntry[], days: number): number {
@@ -262,7 +288,7 @@ export async function getStaffById(id: string): Promise<StaffMember | undefined>
 export async function getPendingApprovals(): Promise<{ tasks: Task[]; entries: DailyEntry[] }> {
   const [tasks, entries] = await Promise.all([getTasks(), getEntries()]);
   return {
-    tasks: tasks.filter(t => t.approval === 'Pending Review'),
+    tasks: tasks.filter(t => t.status === 'review'),
     entries: entries.filter(e => e.approval === 'Pending Review'),
   };
 }
